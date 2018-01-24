@@ -13,4 +13,7 @@ coreSetup(svnroot,ijroot,'mandermann');
 
 % default folder
 cd('D:\Analysis_scripts\Dropbox\AndermannLab\users\hanae');
-clear all
+
+clear all;
+close all;
+clc;
