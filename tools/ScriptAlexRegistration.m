@@ -13,7 +13,7 @@ for nbrun = 1:4
 
 % Choose datafile
 mouse = 'DL68'; 
-date = '170712';
+date = '170523';
 run = nbrun;
 path = sbxPath(mouse, date, run, 'sbx'); % path to data
 
@@ -23,7 +23,7 @@ nframes_total = info.max_idx + 1;
 % almost always 27900, which is 30 minutes * 60 seconds/minute * 15.5 
 
 % Read data
-data = sbxReadPMT(path, 0, nframes_total,  0, []); % size 512 x 796 x 27900
+%data = sbxReadPMT(path, 0, nframes_total,  0, []); % size 512 x 796 x 27900
 
 % See running state of the mouse
 running = sbxSpeed(mouse, date, run);
@@ -38,7 +38,7 @@ full_vol = full_vol(:,:,1:14,:); % remove last zlevel to get an even number of z
 
 % Parameters
 nPlanesForCorrelation = 5;
-nPlanesPerReferenceVolume = 11;
+nPlanesPerReferenceVolume = 12;
 KeepingFactor = 0.35;
 BlurFactor = 3;
 ReferenceVolumeIndex = 1;

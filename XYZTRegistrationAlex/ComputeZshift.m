@@ -11,10 +11,19 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(tvector,ReferenceVolume
         end
         Mean=nanmean(Correlations);
         [~,J]=max(Mean);
-        FitOrder=5;
+  
         x=StartPlane+J-5-1:0.01:StartPlane+J+5-1;
         warning('off','MATLAB:polyfit:RepeatedPointsOrRescale');
-        P=polyfit((StartPlane+J-5-1:StartPlane+J+5-1),Mean(J-5:J+5),FitOrder);
+        if J-5 < 1
+            c = J-1;
+        elseif  J+5 > size(Mean,2)
+            c = size(Mean,2)-J;
+        else
+            c = 0;
+        end
+        FitOrder=c;
+        P=polyfit((StartPlane+J-c-1:StartPlane+J+c-1),Mean(J-c:J+c),FitOrder);
+        
         CorrelationFit=0;
         for(n=0:FitOrder)
             CorrelationFit=P((FitOrder+1)-n)*(x.^n)'+CorrelationFit;  
