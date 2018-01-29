@@ -1,6 +1,6 @@
 function[correctedVolume] = ApplyXYZShifts(fullVolume,ZShifts,RowShifts,ColumnShifts) 
     correctedVolume=(fullVolume);
-    disp('Correct X, Y and Z shifts...')
+
     for(t=1:size(fullVolume,4))
         Higher=ceil(ZShifts(t));
         Lower=floor(ZShifts(t));

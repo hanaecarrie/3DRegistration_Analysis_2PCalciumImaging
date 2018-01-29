@@ -1,24 +1,23 @@
 function[correctedVolume, ZShifts, RowShiftsXYZ, ColumnShiftsXYZ,...
     RowShiftsXY, ColumnShiftsXY] = XYZTRegistrationTranslation(full_vol,...
-    nPlanesForCorrelation, nPlanesPerReferenceVolume, ...
     ReferenceVolumeIndex, BlurFactor, KeepingFactor)
 
 disp('Starting');
 
-disp('Compute XYZ-shifts') 
 [ZShifts,RowShiftsXYZ,ColumnShiftsXYZ] = DetermineXYZShifts(full_vol,...
-    BlurFactor, KeepingFactor, ReferenceVolumeIndex, ...
-    nPlanesPerReferenceVolume, nPlanesForCorrelation);
+    BlurFactor, KeepingFactor, ReferenceVolumeIndex);
 
-disp('Apply XYZ-shifts') 
+disp('Apply XYZ correction shifts') 
 [correctedVolume] = ApplyXYZShifts(full_vol, ZShifts, RowShiftsXYZ, ...
     ColumnShiftsXYZ); 
 
-disp('Compute XY-shifts') 
+disp('THIRD STEP: Perform another XY registration across planes and across time')
+
+disp('Determine new XY correction shifts') 
 [RowShiftsXY, ColumnShiftsXY] = DetermineXYShifts(correctedVolume,...
     BlurFactor, KeepingFactor, ReferenceVolumeIndex);
 
-disp('Apply XY registration...')
+disp('Apply new XY correction shifts')
 [correctedVolume] = ApplyXYShifts(correctedVolume, RowShiftsXY, ...
     ColumnShiftsXY);
 
