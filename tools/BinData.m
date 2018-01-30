@@ -23,7 +23,7 @@ for i = 1:14
     seqi = cat(3, seq_1, seq_2, seq_3, seq_4);
     seqi = reshape(seqi, [size(seqi, 1), size(seqi, 2), n, ...
         idivide(int16(size(seqi, 3)),n)]);
-    seqi = mean(seqi, 3);
+    seqi = sum(seqi, 3);
     seqi = squeeze(permute(seqi, [1, 2, 4, 3]));
     seq{i} = seqi;
     clear seq_1;
@@ -37,9 +37,14 @@ end
 
 binseq = cat(4, seq{1},seq{2},seq{3},seq{4},seq{5},seq{6},seq{7},seq{8},...
     seq{9},seq{10},seq{11},seq{12},seq{13},seq{14});
-binseq = mean(binseq, 4);
+binseq = sum(binseq, 4);
 
 %% Save video and data
 
-WriteVideo('binseq_unreg.avi', binseq);
-save('binseq_unreg.mat', 'binseq');
+binseq2 = binseq(:,:,:);
+for i = 1:size(binseq,3)
+    binseq2(:,:,i) = mat2gray(binseq2(:,:,i));
+end
+
+WriteVideo('binseq_unreg_small.avi', binseq2);
+save('binseq_unreg_small.mat', 'binseq');
