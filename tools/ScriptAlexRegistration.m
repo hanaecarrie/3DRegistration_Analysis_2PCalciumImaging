@@ -7,13 +7,13 @@ addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
 startup;
 %%
 
-for nbrun = 1
+for nbrun = 1:4
     
 %% STEP 0: GET DATA 
 
 % Choose datafile
 mouse = 'DL68'; 
-date = '170712';
+date = '170523';
 run = nbrun;
 path = sbxPath(mouse, date, run, 'sbx'); % path to data
 
@@ -53,8 +53,8 @@ ReferenceVolumeIndex = 1;
 
 % Create folders
 foldername_begin = strcat('mouse', mouse, '_date', date, '_run', num2str(run));
-mkdir(['E:\hanae_data\alextry\' foldername_begin]);
-newdir = strcat('E:\hanae_data\alextry\', foldername_begin, '\');
+mkdir(['E:\hanae_data\alextry2\' foldername_begin]);
+newdir = strcat('E:\hanae_data\alextry2\', foldername_begin, '\');
 mkdir([newdir 'Alexregistration']);
 savingpathreg = strcat(newdir, 'Alexregistration\');
 

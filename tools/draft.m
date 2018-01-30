@@ -7,13 +7,13 @@ addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
 startup;
 %%
 
-for nbrun = 1
+for nbrun = 1:4
     
 %% STEP 0: GET DATA 
 
 % Choose datafile
 mouse = 'DL68'; 
-date = '170523';
+date = '170712';
 run = nbrun;
 path = sbxPath(mouse, date, run, 'sbx'); % path to data
 
@@ -34,27 +34,27 @@ time = 1:nframes_total;
 
 % reshape data as a 4D matrix (x,y,z,t)
 full_vol = reshape(data, [size(data, 1), size(data, 2), 15, 1860]);
-%full_vol = full_vol(:,:,1:14,:); % remove last zlevel to get an even number of zlevel
+full_vol = full_vol(:,:,1:14,:); % remove last zlevel to get an even number of zlevel
 
 % Parameters
-nPlanesForCorrelation = 7;
-nPlanesPerReferenceVolume = 15;
-KeepingFactor = 0.95;
-BlurFactor = 1;
+nPlanesForCorrelation = 5;
+nPlanesPerReferenceVolume = 11;
+KeepingFactor = 0.35;
+BlurFactor = 3;
 ReferenceVolumeIndex = 1;
 
 % Make xyzt registration (Alex Fratzl)
 [correctedVolume, ZShifts, RowShiftsXYZ, ColumnShiftsXYZ,...
     RowShiftsXY, ColumnShiftsXY] = XYZTRegistrationTranslation(full_vol,...
+    nPlanesForCorrelation, nPlanesPerReferenceVolume, ...
     ReferenceVolumeIndex, BlurFactor, KeepingFactor);
- %nPlanesForCorrelation, nPlanesPerReferenceVolume, ...
 
 %% Save results
 
 % Create folders
 foldername_begin = strcat('mouse', mouse, '_date', date, '_run', num2str(run));
-mkdir(['E:\hanae_data\alextry\' foldername_begin]);
-newdir = strcat('E:\hanae_data\alextry\', foldername_begin, '\');
+mkdir(['E:\hanae_data\alextry2\' foldername_begin]);
+newdir = strcat('E:\hanae_data\alextry2\', foldername_begin, '\');
 mkdir([newdir 'Alexregistration']);
 savingpathreg = strcat(newdir, 'Alexregistration\');
 
@@ -97,7 +97,7 @@ save(strcat(savingpathreg, 'ColumnShiftsXY.mat'),'ColumnShiftsXY');
 save(strcat(savingpathreg, 'ColumnShiftsXYZ.mat'),'ColumnShiftsXYZ');
 
 fig2 = figure;
-plot(-ZShifts);
+plot(ZShifts);
 saveas(fig2, strcat(savingpathreg, 'ZShifts.png'));
 
 % XZ Crosssection
@@ -107,7 +107,7 @@ for i= 1:1860
 vol_y400 = mat2gray(double(correctedVolume(:, 393:402,:,i)));
 avg_vol_y400 = mean(vol_y400, 2);
 avg_vol_y400 = reshape(avg_vol_y400, [size(avg_vol_y400,1), size(avg_vol_y400,3)]);
-%res(:,:,i) = avg_vol_y400;
+res(:,:,i) = avg_vol_y400;
 end
 
 save(strcat(savingpathreg, 'xzcrosssection_avgy393to402.mat'), 'res');
@@ -150,7 +150,7 @@ for i= 1:1860
 vol_y400 = mat2gray(double(full_vol(:, 393:402,:,i)));
 avg_vol_y400 = mean(vol_y400, 2);
 avg_vol_y400 = reshape(avg_vol_y400, [size(avg_vol_y400,1), size(avg_vol_y400,3)]);
-%res(:,:,i) = avg_vol_y400;
+res(:,:,i) = avg_vol_y400;
 end
 
 save(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.mat'), 'res');
