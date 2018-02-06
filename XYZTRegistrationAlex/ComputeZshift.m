@@ -17,11 +17,12 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
             end
         end
         Mean = nanmean(Correlations);
+        %figure; plot(Mean); hold on;
         [~,J] = max(Mean);
-        if J-Size(3)~= 0
+        %if J-Size(3)~= 0
             disp(strcat('Zshift volume n°', num2str(t), ':  ',...
                 num2str(J-Size(3))));
-        end
+        %end
         
         x = J-5:0.01:J+5;
         FitOrder = 5;
@@ -36,6 +37,6 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
 
         RowShifts(:,t) = ones(Size(3),1)*row_shift;
         ColumnShifts(:,t) = ones(Size(3),1)*column_shift;
-        ZShifts(t) = (I-1)*0.01+J-5-Size(3);
+        ZShifts(t) = -((I-1)*0.01+J-5-Size(3));
     end
 end
