@@ -8,14 +8,14 @@ addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
 startup;
 
 % Choose datafile
-mouse = 'DL68'; 
-date = '170523';
+mouse = 'DL89'; 
+date = '171122';
 nbrun = 1;
 
 % See running state of the mouse
 running = sbxSpeed(mouse, date, nbrun);
 
-n = 15; % average every n values
+n = 30; % average every n values
 a = reshape(running,[],1); % arbitrary data
 avgrun = arrayfun(@(i) mean(a(i:i+n-1)),1:n:length(a)-n+1)';
 %avgrun = running(1:15:end);
@@ -27,13 +27,13 @@ pathzshift = strcat('E:\hanae_data\alextry2\mouse', mouse, '_date',...
     date, '_run', num2str(nbrun), '\Alexregistration\ZShifts.mat');
 load(pathzshift);
 
-x = linspace(1, 1800, 1860);
+x = linspace(1, 900, 930);
 x = x/60;
 run = abs(avgrun);
 zshift = (ZShifts)-mean(ZShifts);
-zshift = wden(zshift,'modwtsqtwolog','s','mln',4,'sym4');
+%zshift = wden(zshift,'modwtsqtwolog','s','mln',4,'sym4');
 %zshift(840:1140) = smooth(zshift(840:1140));
-%zshift = smooth(zshift);
+zshift = smooth(zshift);
 % N = length(zshift);
 % fftzshift = fft(zshift);
 % xdft = fftzshift/sqrt(N);
@@ -73,9 +73,9 @@ zshift = wden(zshift,'modwtsqtwolog','s','mln',4,'sym4');
 
 figure;
 yyaxis left; plot(x, run);
-xlabel('time (min)'); ylabel('arbitrary unit'); axis([1 30 -2 18]);
+xlabel('time (min)'); ylabel('arbitrary unit'); axis([1 15 -2 18]);
 yyaxis right; plot(x, zshift);
-ylabel('Z level index (no unit)'); axis([1 30 -1.2 1.2]);
+ylabel('Z level index (no unit)'); axis([1 15 -1.2 1.2]);
 graphtitle = strcat('mouse:', mouse, ', date:', date,...
     ', run:', num2str(nbrun));
 title(graphtitle);
