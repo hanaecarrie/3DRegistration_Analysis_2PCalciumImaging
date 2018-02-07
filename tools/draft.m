@@ -7,7 +7,7 @@ clc;
 %startup;
 %%
 
-for nbrun = 1:6
+for nbrun = 2:6
     
 %% STEP 0: GET DATA 
 
@@ -17,25 +17,26 @@ date = '171122';
 run = nbrun;
 path = sbxPath(mouse, date, run, 'sbx'); % path to data
 
+% Read data
+data = sbxReadPMT(path, 0, nframes_total,  0, []); % size 512 x 796 x 27900
+
 % Get datafile info
 info = sbxInfo(path);
 nframes_total = info.max_idx + 1;
 % almost always 27900, which is 30 minutes * 60 seconds/minute * 15.5 
 
-% Read data
-data = sbxReadPMT(path, 0, nframes_total,  0, []); % size 512 x 796 x 27900
-
 % See running state of the mouse
 running = sbxSpeed(mouse, date, run);
 time = 1:nframes_total;
-
 
 %% STEP 1: MAKE REGISTRATION
 
 % reshape data as a 4D matrix (x,y,z,t)
 full_vol = reshape(data, [size(data, 1), size(data, 2), 30, 930]); %XXX
 %full_vol = permute(full_vol, [1,2,4,3]);
-full_vol = full_vol(:,:,1:29,:); % remove last zlevel to get an even number of zlevel
+full_vol = full_vol(:,:,1:29,:);
+% remove last zlevel to get an even number of zlevel
+
 %%
 % Parameters
 %nPlanesForCorrelation = 11;
@@ -44,14 +45,16 @@ KeepingFactor = 0.95;
 BlurFactor = 1;
 ReferenceVolumeIndex = 1;
 
+tic;
 % Make xyzt registration (Alex Fratzl)
 [correctedVolume, ZShifts, RowShiftsXYZ, ColumnShiftsXYZ,...
     RowShiftsXY, ColumnShiftsXY] = XYZTRegistrationTranslation(full_vol,...
     ReferenceVolumeIndex, BlurFactor, KeepingFactor);
  %nPlanesForCorrelation, nPlanesPerReferenceVolume, ...
+ toc;
 
 %% Save results
-
+    
 % Create folders
 foldername_begin = strcat('mouse', mouse, '_date', date, '_run', num2str(run));
 mkdir(['E:\hanae_data\alextry2\' foldername_begin]);
@@ -63,6 +66,17 @@ fig1 = figure;
 plot(time(1:size(full_vol, 3):end), running(1:size(full_vol, 3):end));
 saveas(fig1, strcat(savingpathreg, 'RunningState.png'));
 save(strcat(savingpathreg, 'RunningState.mat'),'running');
+
+fig2 = figure;
+plot(ZShifts);
+saveas(fig2, strcat(savingpathreg, 'ZShifts.png'));
+
+% Save shift
+save(strcat(savingpathreg, 'ZShifts.mat'),'ZShifts');
+save(strcat(savingpathreg, 'RowShiftsXY.mat'),'RowShiftsXY');
+save(strcat(savingpathreg, 'RowShiftsXYZ.mat'),'RowShiftsXYZ');
+save(strcat(savingpathreg, 'ColumnShiftsXY.mat'),'ColumnShiftsXY');
+save(strcat(savingpathreg, 'ColumnShiftsXYZ.mat'),'ColumnShiftsXYZ');
 
 % Videos per zlevel and .mat file
 for i = 1:size(full_vol, 3)
@@ -91,17 +105,7 @@ save(strcat(savingpathreg, 'zlevel', num2str(i),...
 
 end
 
-% Save shift
-save(strcat(savingpathreg, 'ZShifts.mat'),'ZShifts');
-save(strcat(savingpathreg, 'RowShiftsXY.mat'),'RowShiftsXY');
-save(strcat(savingpathreg, 'RowShiftsXYZ.mat'),'RowShiftsXYZ');
-save(strcat(savingpathreg, 'ColumnShiftsXY.mat'),'ColumnShiftsXY');
-save(strcat(savingpathreg, 'ColumnShiftsXYZ.mat'),'ColumnShiftsXYZ');
-
-fig2 = figure;
-plot(ZShifts);
-saveas(fig2, strcat(savingpathreg, 'ZShifts.png'));
-
+%%
 % XZ Crosssection
 res = zeros(size(full_vol, 1),size(full_vol,3),size(full_vol,4));
 
