@@ -5,31 +5,30 @@ clc;
 
 %addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
 %startup;
-%%
 
 for nbrun = 2:6
-    
 %% STEP 0: GET DATA 
 
+disp(nbrun)
 % Choose datafile
 mouse = 'DL89'; 
 date = '171122';
-run = nbrun;
-path = sbxPath(mouse, date, run, 'sbx'); % path to data
-
-% Read data
-data = sbxReadPMT(path, 0, nframes_total,  0, []); % size 512 x 796 x 27900
+path = sbxPath(mouse, date, nbrun, 'sbx'); % path to data
 
 % Get datafile info
 info = sbxInfo(path);
 nframes_total = info.max_idx + 1;
 % almost always 27900, which is 30 minutes * 60 seconds/minute * 15.5 
 
+% Read data
+data = sbxReadPMT(path, 0, nframes_total,  0, []); % size 512 x 796 x 27900
+
 % See running state of the mouse
-running = sbxSpeed(mouse, date, run);
+running = sbxSpeed(mouse, date, nbrun);
 time = 1:nframes_total;
 
 %% STEP 1: MAKE REGISTRATION
+disp("STEP 1: MAKE REGISTRATION")
 
 % reshape data as a 4D matrix (x,y,z,t)
 full_vol = reshape(data, [size(data, 1), size(data, 2), 30, 930]); %XXX
@@ -56,7 +55,7 @@ tic;
 %% Save results
     
 % Create folders
-foldername_begin = strcat('mouse', mouse, '_date', date, '_run', num2str(run));
+foldername_begin = strcat('mouse', mouse, '_date', date, '_run', num2str(nbrun));
 mkdir(['E:\hanae_data\alextry2\' foldername_begin]);
 newdir = strcat('E:\hanae_data\alextry2\', foldername_begin, '\');
 mkdir([newdir 'Alexregistration']);
@@ -65,18 +64,18 @@ savingpathreg = strcat(newdir, 'Alexregistration\');
 fig1 = figure;
 plot(time(1:size(full_vol, 3):end), running(1:size(full_vol, 3):end));
 saveas(fig1, strcat(savingpathreg, 'RunningState.png'));
-save(strcat(savingpathreg, 'RunningState.mat'),'running');
+parsave(strcat(savingpathreg, 'RunningState.mat'),'running');
 
 fig2 = figure;
 plot(ZShifts);
 saveas(fig2, strcat(savingpathreg, 'ZShifts.png'));
 
 % Save shift
-save(strcat(savingpathreg, 'ZShifts.mat'),'ZShifts');
-save(strcat(savingpathreg, 'RowShiftsXY.mat'),'RowShiftsXY');
-save(strcat(savingpathreg, 'RowShiftsXYZ.mat'),'RowShiftsXYZ');
-save(strcat(savingpathreg, 'ColumnShiftsXY.mat'),'ColumnShiftsXY');
-save(strcat(savingpathreg, 'ColumnShiftsXYZ.mat'),'ColumnShiftsXYZ');
+parsave(strcat(savingpathreg, 'ZShifts.mat'),'ZShifts');
+parsave(strcat(savingpathreg, 'RowShiftsXY.mat'),'RowShiftsXY');
+parsave(strcat(savingpathreg, 'RowShiftsXYZ.mat'),'RowShiftsXYZ');
+parsave(strcat(savingpathreg, 'ColumnShiftsXY.mat'),'ColumnShiftsXY');
+parsave(strcat(savingpathreg, 'ColumnShiftsXYZ.mat'),'ColumnShiftsXYZ');
 
 % Videos per zlevel and .mat file
 for i = 1:size(full_vol, 3)
@@ -89,11 +88,11 @@ seq = mat2gray(double(seq(:,:,:,i)));
 WriteVideo(title, seq);
 
 seq_1 = seq(:,:,1:465);
-save(strcat(savingpathreg, 'zlevel', num2str(i),...
+parsave(strcat(savingpathreg, 'zlevel', num2str(i),...
      '_', num2str(size(full_vol, 4)), 'volumes_BF1_KF095_RVI1_1.mat'),...
      'seq_1');
 seq_2 = seq(:,:,466:930);
-save(strcat(savingpathreg, 'zlevel', num2str(i),...
+parsave(strcat(savingpathreg, 'zlevel', num2str(i),...
      '_', num2str(size(full_vol, 4)), 'volumes_BF1_KF095_RVI1_2.mat'),...
      'seq_2');
 % seq_3 = seq(:,:,931:1395);
@@ -116,7 +115,7 @@ avg_vol_y400 = reshape(avg_vol_y400, [size(avg_vol_y400,1), size(avg_vol_y400,3)
 res(:,:,i) = avg_vol_y400;
 end
 
-save(strcat(savingpathreg, 'xzcrosssection_avgy393to402.mat'), 'res');
+parsave(strcat(savingpathreg, 'xzcrosssection_avgy393to402.mat'), 'res');
 WriteVideo(strcat(savingpathreg, 'xzcrosssection_avgy393to402.avi'), res);
 
 
@@ -136,7 +135,7 @@ seq = mat2gray(double(seq(:,:,:,i)));
 WriteVideo(title, seq);
 
 seq_1 = seq(:,:,1:465);
-save(strcat(savingpathunreg, 'zlevel', num2str(i),...
+parsave(strcat(savingpathunreg, 'zlevel', num2str(i),...
      '_', num2str(size(full_vol, 4)), 'volumes_BF1_KF095_RVI1_1.mat'),...
      'seq_1');
 seq_2 = seq(:,:,466:930);
@@ -161,7 +160,7 @@ avg_vol_y400 = reshape(avg_vol_y400, [size(avg_vol_y400,1), size(avg_vol_y400,3)
 res(:,:,i) = avg_vol_y400;
 end
 
-save(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.mat'), 'res');
+parsave(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.mat'), 'res');
 WriteVideo(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.avi'), res);
 
 end
