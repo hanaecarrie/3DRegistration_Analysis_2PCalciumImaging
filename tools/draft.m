@@ -3,10 +3,11 @@ clear all;
 close all;
 clc;
 
-%addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
-%startup;
+addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
+addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\hanae'));
+startup;
 
-for nbrun = 2:6
+for nbrun = 4
 %% STEP 0: GET DATA 
 
 disp(nbrun)
@@ -28,7 +29,7 @@ running = sbxSpeed(mouse, date, nbrun);
 time = 1:nframes_total;
 
 %% STEP 1: MAKE REGISTRATION
-disp("STEP 1: MAKE REGISTRATION")
+disp('STEP 1: MAKE REGISTRATION')
 
 % reshape data as a 4D matrix (x,y,z,t)
 full_vol = reshape(data, [size(data, 1), size(data, 2), 30, 930]); %XXX
@@ -64,18 +65,18 @@ savingpathreg = strcat(newdir, 'Alexregistration\');
 fig1 = figure;
 plot(time(1:size(full_vol, 3):end), running(1:size(full_vol, 3):end));
 saveas(fig1, strcat(savingpathreg, 'RunningState.png'));
-parsave(strcat(savingpathreg, 'RunningState.mat'),'running');
+save(strcat(savingpathreg, 'RunningState.mat'),'running');
 
 fig2 = figure;
 plot(ZShifts);
 saveas(fig2, strcat(savingpathreg, 'ZShifts.png'));
 
 % Save shift
-parsave(strcat(savingpathreg, 'ZShifts.mat'),'ZShifts');
-parsave(strcat(savingpathreg, 'RowShiftsXY.mat'),'RowShiftsXY');
-parsave(strcat(savingpathreg, 'RowShiftsXYZ.mat'),'RowShiftsXYZ');
-parsave(strcat(savingpathreg, 'ColumnShiftsXY.mat'),'ColumnShiftsXY');
-parsave(strcat(savingpathreg, 'ColumnShiftsXYZ.mat'),'ColumnShiftsXYZ');
+save(strcat(savingpathreg, 'ZShifts.mat'),'ZShifts');
+save(strcat(savingpathreg, 'RowShiftsXY.mat'),'RowShiftsXY');
+save(strcat(savingpathreg, 'RowShiftsXYZ.mat'),'RowShiftsXYZ');
+save(strcat(savingpathreg, 'ColumnShiftsXY.mat'),'ColumnShiftsXY');
+save(strcat(savingpathreg, 'ColumnShiftsXYZ.mat'),'ColumnShiftsXYZ');
 
 % Videos per zlevel and .mat file
 for i = 1:size(full_vol, 3)
@@ -88,11 +89,11 @@ seq = mat2gray(double(seq(:,:,:,i)));
 WriteVideo(title, seq);
 
 seq_1 = seq(:,:,1:465);
-parsave(strcat(savingpathreg, 'zlevel', num2str(i),...
+save(strcat(savingpathreg, 'zlevel', num2str(i),...
      '_', num2str(size(full_vol, 4)), 'volumes_BF1_KF095_RVI1_1.mat'),...
      'seq_1');
 seq_2 = seq(:,:,466:930);
-parsave(strcat(savingpathreg, 'zlevel', num2str(i),...
+save(strcat(savingpathreg, 'zlevel', num2str(i),...
      '_', num2str(size(full_vol, 4)), 'volumes_BF1_KF095_RVI1_2.mat'),...
      'seq_2');
 % seq_3 = seq(:,:,931:1395);
@@ -115,7 +116,7 @@ avg_vol_y400 = reshape(avg_vol_y400, [size(avg_vol_y400,1), size(avg_vol_y400,3)
 res(:,:,i) = avg_vol_y400;
 end
 
-parsave(strcat(savingpathreg, 'xzcrosssection_avgy393to402.mat'), 'res');
+save(strcat(savingpathreg, 'xzcrosssection_avgy393to402.mat'), 'res');
 WriteVideo(strcat(savingpathreg, 'xzcrosssection_avgy393to402.avi'), res);
 
 
@@ -135,7 +136,7 @@ seq = mat2gray(double(seq(:,:,:,i)));
 WriteVideo(title, seq);
 
 seq_1 = seq(:,:,1:465);
-parsave(strcat(savingpathunreg, 'zlevel', num2str(i),...
+save(strcat(savingpathunreg, 'zlevel', num2str(i),...
      '_', num2str(size(full_vol, 4)), 'volumes_BF1_KF095_RVI1_1.mat'),...
      'seq_1');
 seq_2 = seq(:,:,466:930);
@@ -160,7 +161,7 @@ avg_vol_y400 = reshape(avg_vol_y400, [size(avg_vol_y400,1), size(avg_vol_y400,3)
 res(:,:,i) = avg_vol_y400;
 end
 
-parsave(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.mat'), 'res');
+save(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.mat'), 'res');
 WriteVideo(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.avi'), res);
 
 end
