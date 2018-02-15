@@ -25,7 +25,7 @@ function [cellgroups, deviance_explained] = glmPoissonDura(mouse, date, varargin
     p = p.Results;
     
     % Cell groups to save
-    cellgroups = 'dscaleml', 'dscaleap', 'runonset', 'dtransrms', 'dshearrms'};
+    cellgroups = {'dscaleml', 'dscaleap', 'runonset', 'dtransrms', 'dshearrms'};
     
     % Get file paths
     
@@ -63,7 +63,9 @@ function [cellgroups, deviance_explained] = glmPoissonDura(mouse, date, varargin
 %             end
 
             for v = 1:length(p.include_behavior)
-                [onsets, dilation] = glmOnsetsBehavioral(sc.transml, sc.transap, sc.shearml, sc.shearap, sc.scaleml, sc.scaleap, sc.running, sc.framerate, nframes, p.dilate, p.include_behavior{v});
+                transrms = sqrt(sc.transap.^2 + (sc.transml.^2));
+                shearrms = sqrt(sc.shearap.^2 + (sc.shearml.^2));
+                [onsets, dilation] = glmOnsetsBehavioralDura(sc.scaleml, sc.scaleap,  sc.running, transrms, shearrms, sc.framerate, nframes, p.dilate, p.include_behavior{v});
                 [basis, lags] = glmBasis(onsets, dilation, nframes, sc.framerate, p.downsample_t, p.basis_downsampled_frames, p.gaussian_s, false);
                 behavior = [behavior; basis];
                 behaviorlags = [behaviorlags lags];

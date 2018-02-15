@@ -1,5 +1,5 @@
-function [frames, dilation] = glmOnsetsBehavioralDura(licking, ensure, quinine, framerate, nframes, dilate, behavior)
-%GLMONSETSVISUAL Return a list of visual-event onsets in frames based on
+function [frames, dilation] = glmOnsetsBehavioralDura(dscaleml, dscaleap, runonset, dtransrms, dshearrms, framerate, nframes, dilate, behavior)
+%GLMONSETSVISUAL Return a list of behavioral-event onsets in frames based on
 %   behavior name from a simpcell file.
     
     % Available names
