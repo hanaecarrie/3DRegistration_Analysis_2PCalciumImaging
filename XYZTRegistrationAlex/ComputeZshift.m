@@ -1,41 +1,42 @@
-function[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(tvector,ReferenceVolume,OrderedVolumes,Size,StartCorrelation,EndCorrelation,StartPlane,nPlanesPerReferenceVolume)
-    for(t=tvector)
-        Correlations=ones(EndCorrelation-StartCorrelation+1,EndCorrelation-StartCorrelation+nPlanesPerReferenceVolume)*NaN;
-        for(i=StartCorrelation:EndCorrelation)
-            for(j=1:nPlanesPerReferenceVolume)
-                output = dftregistrationAlex(fft2(ReferenceVolume(:,:,i)),fft2(OrderedVolumes(:,:,j,t)),10);
-                row_shift=output(1);
-                column_shift=output(2);
-                Correlations(i-(StartCorrelation-1),EndCorrelation+j-i)=corr2(ReferenceVolume(:,:,i),imtranslate(OrderedVolumes(:,:,j,t),[column_shift row_shift]));
+function[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
+    tvector, ReferenceVolume, OrderedVolumes, Size)
+
+    for t=tvector
+        Correlations = ones(Size(3),2*Size(3)-1)*NaN;
+        for j = 1:Size(3) % considered plane
+            for i = 1:Size(3) % ref plane
+                output = dftregistrationAlex(...
+                    fft2(ReferenceVolume(:,:,i)),...
+                    fft2(OrderedVolumes(:,:,j,t)),10);
+                row_shift = output(1);
+                column_shift = output(2);
+                Correlations(j,i+ceil(Size(3))-j) = corr2(...
+                    ReferenceVolume(:,:,i), ...
+                    imtranslate(OrderedVolumes(:,:,j,t),...
+                    [column_shift row_shift]));
             end
         end
-        Mean=nanmean(Correlations);
-        [~,J]=max(Mean);
-  
-        x=StartPlane+J-5-1:0.01:StartPlane+J+5-1;
-        warning('off','MATLAB:polyfit:RepeatedPointsOrRescale');
-        if J-5 < 1
-            c = J-1;
-        elseif  J+5 > size(Mean,2)
-            c = size(Mean,2)-J;
-        else
-            c = 0;
-        end
-        FitOrder=c;
-        P=polyfit((StartPlane+J-c-1:StartPlane+J+c-1),Mean(J-c:J+c),FitOrder);
+        Mean = nanmean(Correlations);
+        %figure; plot(Mean); hold on;
+        [~,J] = max(Mean);
+        %if J-Size(3)~= 0
+            disp(strcat('Zshift volume n°', num2str(t), ':  ',...
+                num2str(J-Size(3))));
+        %end
         
-        CorrelationFit=0;
-        for(n=0:FitOrder)
-            CorrelationFit=P((FitOrder+1)-n)*(x.^n)'+CorrelationFit;  
-        end
-        [~,I]=max(CorrelationFit);
+        x = J-5:0.01:J+5;
+        FitOrder = 5;
+        P = polyfit(J-5:J+5, Mean(J-5:J+5),FitOrder);
+        CorrelationFit = polyval(P, x);
+        [~,I] = max(CorrelationFit);
+        %figure; plot(x-Size(3), CorrelationFit); hold on;
+        output = dftregistrationAlex(fft2(mean(ReferenceVolume,3)),...
+            fft2(mean(OrderedVolumes(:,:,:,t),3)),100);
+        row_shift = output(1);
+        column_shift = output(2);
 
-        output = dftregistrationAlex(fft2(mean(ReferenceVolume,3)),fft2(mean(OrderedVolumes(:,:,:,t),3)),100);
-        row_shift=output(1);
-        column_shift=output(2);
-
-        RowShifts(:,t)=ones(Size(3),1)*row_shift;
-        ColumnShifts(:,t)=ones(Size(3),1)*column_shift;
-        ZShifts(t)=(I-1)*0.01+StartPlane+J-5-1;
+        RowShifts(:,t) = ones(Size(3),1)*row_shift;
+        ColumnShifts(:,t) = ones(Size(3),1)*column_shift;
+        ZShifts(t) = -((I-1)*0.01+J-5-Size(3));
     end
 end

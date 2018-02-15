@@ -9,7 +9,7 @@ startup;
 
 % Choose datafile
 mouse = 'DL89'; 
-date = '171122';
+date = '171119';
 nbrun = 1;
 
 % See running state of the mouse
@@ -33,7 +33,7 @@ run = abs(avgrun);
 zshift = (ZShifts)-mean(ZShifts);
 %zshift = wden(zshift,'modwtsqtwolog','s','mln',4,'sym4');
 %zshift(840:1140) = smooth(zshift(840:1140));
-zshift = smooth(zshift);
+%zshift = smooth(zshift);
 % N = length(zshift);
 % fftzshift = fft(zshift);
 % xdft = fftzshift/sqrt(N);

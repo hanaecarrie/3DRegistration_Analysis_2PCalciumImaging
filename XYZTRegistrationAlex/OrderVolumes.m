@@ -1,7 +1,7 @@
 function[RowShifts,ColumnShifts,OrderedVolumes] = OrderVolumes(...
     tvector,Size,BlurFactor,red_vol)
-
-    for(t=tvector)
+    
+    for t=tvector
         stackFixed(:,:,ceil(Size(3)/2)) = imgaussfilt(...
             red_vol(:,:,ceil(Size(3)/2),t),BlurFactor);
         RowShifts(ceil(Size(3)/2),t) = 0;
