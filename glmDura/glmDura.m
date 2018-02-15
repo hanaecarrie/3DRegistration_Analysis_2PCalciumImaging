@@ -27,7 +27,20 @@ function [out, myout] = glmDura(mouse, date, run, verbose)
     
     % Calculated parameters
     if verbose, disp('Loading file...'); end
-    sc = sbxLoad(mouse, date, run, 'simpcell');
+    sc = sbxLoad(mouse, date, run(1), 'simpcell');     
+    if length(run) > 1
+        fields = fieldnames(sc);
+        for r  = 2:length(run)
+            sc_r = sbxLoad(mouse, date, run(r), 'simpcell');
+            for i = 1:numel(fields)
+                if i ~= 14
+                sc.(fields{i}) = cat(2, sc.(fields{i}), sc_r.((fields{i})));
+                end
+            end
+        end
+    end
+    sc.framerate = sc.framerate(1);
+ 
     
     if verbose, disp('Loading registration...'); end
     mot = registrationDecomposition(mouse, date, run);
@@ -219,12 +232,12 @@ function [out, myout] = glmDura(mouse, date, run, verbose)
         
         out = glm(cdata', behavior, settings);
         
-%         figure;
-%         plot(out.time/1000.0, out.kernel);
-%         legend(include_behaviors);
-%         xlabel('Time (s)');
-%         ylabel('Filter');
-%         title(sprintf('Filters of ROI %i', c));
+        figure;
+        plot(out.time/1000.0, out.kernel);
+        legend(include_behaviors);
+        xlabel('Time (s)');
+        ylabel('Filter');
+        title(sprintf('Filters of ROI %i', c));
 %         pause();
 
         % save dscaleap vs dpscaleml
