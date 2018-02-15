@@ -1,4 +1,4 @@
-function [cellgroups, deviance_explained] = glmPoisson(mouse, date, varargin)
+function [cellgroups, deviance_explained] = glmPoissonDura(mouse, date, varargin)
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -16,9 +16,8 @@ function [cellgroups, deviance_explained] = glmPoisson(mouse, date, varargin)
     addOptional(p, 'skip_zeros', false);  % Skip times when all non-analog basis functions are zero
     addOptional(p, 'server', []);  % Which server has simpcell files, if not local server
     addOptional(p, 'savepath', []);  % Save the deviance explained if savepath is set
-    addOptional(p, 'include_visual', {'plus_correct', 'plus_miss', 'minus_correct', ...
-        'minus_miss', 'neutral_correct', 'neutral_miss', 'offset'});  % Behavioral variables to include with dilate_visual
-    addOptional(p, 'include_behavior', {'lick_onsets', 'lick_others', 'ensure', 'quinine'});  % Behavioral variables to include with dilate (except for lick_others)
+    addOptional(p, 'include_visual', {});  % Behavioral variables to include with dilate_visual
+    addOptional(p, 'include_behavior', {'dtransrms', 'dshearrms', 'dscaleml', 'dscaleap', 'runonst'});  % Behavioral variables to include with dilate (except for lick_others)
     addOptional(p, 'include_analog', {'brainmotion', 'running'});  % Analog behavioral variables to include with no dilation
     addOptional(p, 'alpha', 0.01);  % The ridge-lasso coefficient
     addOptional(p, 'standardize', true);  % clmnet options
@@ -26,7 +25,7 @@ function [cellgroups, deviance_explained] = glmPoisson(mouse, date, varargin)
     p = p.Results;
     
     % Cell groups to save
-    cellgroups = {'plus', 'neutral', 'minus', 'lick', 'ensure', 'quinine'};
+    cellgroups = 'dscaleml', 'dscaleap', 'runonset', 'dtransrms', 'dshearrms'};
     
     % Get file paths
     
@@ -55,16 +54,16 @@ function [cellgroups, deviance_explained] = glmPoisson(mouse, date, varargin)
             norm = norm./sum(norm);
             for roi = 1:nrois, activity(roi, :) = conv(activity(roi, :), norm, 'same'); end
 
-            for v = 1:length(p.include_visual)
-                onsets = glmOnsetsVisual(sc.onsets, sc.condition, sc.trialerror, sc.codes, sc.framerate, p.include_visual{v});
-                [basis, lags] = glmBasis(onsets, p.dilate_visual, nframes, sc.framerate, p.downsample_t, p.basis_downsampled_frames, p.gaussian_s, false);
-                behavior = [behavior; basis];
-                behaviorlags = [behaviorlags lags];
-                for i = 1:size(basis, 1), behaviornames = [behaviornames p.include_visual{v}]; end
-            end
+%             for v = 1:length(p.include_visual)
+%                 onsets = glmOnsetsVisual(sc.onsets, sc.condition, sc.trialerror, sc.codes, sc.framerate, p.include_visual{v});
+%                 [basis, lags] = glmBasis(onsets, p.dilate_visual, nframes, sc.framerate, p.downsample_t, p.basis_downsampled_frames, p.gaussian_s, false);
+%                 behavior = [behavior; basis];
+%                 behaviorlags = [behaviorlags lags];
+%                 for i = 1:size(basis, 1), behaviornames = [behaviornames p.include_visual{v}]; end
+%             end
 
             for v = 1:length(p.include_behavior)
-                [onsets, dilation] = glmOnsetsBehavioral(sc.licking, sc.ensure, sc.quinine, sc.framerate, nframes, p.dilate, p.include_behavior{v});
+                [onsets, dilation] = glmOnsetsBehavioral(sc.transml, sc.transap, sc.shearml, sc.shearap, sc.scaleml, sc.scaleap, sc.running, sc.framerate, nframes, p.dilate, p.include_behavior{v});
                 [basis, lags] = glmBasis(onsets, dilation, nframes, sc.framerate, p.downsample_t, p.basis_downsampled_frames, p.gaussian_s, false);
                 behavior = [behavior; basis];
                 behaviorlags = [behaviorlags lags];
