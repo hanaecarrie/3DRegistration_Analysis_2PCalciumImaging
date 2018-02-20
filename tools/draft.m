@@ -1,68 +1,68 @@
 %% SCRIPT XYZT REGISTRATION
+
 clear all;
 close all;
 clc;
-
-addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
 addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\hanae'));
-startup;
 
-for nbrun = 4
+%% STEP 0: GET DATA 
 
-    %% STEP 0: GET DATA 
-
-disp(nbrun)
+disp('STEP 0: GET DATA')
 
 % Choose datafile
 mouse = 'DL89'; 
 date = '171122';
-path = sbxPath(mouse, date, nbrun, 'sbx'); % path to data
+nbrun = 3;
 
 % Get datafile info
+path = sbxPath(mouse, date, nbrun, 'sbx'); % path to data
 info = sbxInfo(path);
-nframes_total = info.max_idx + 1;
-% almost always 27900, which is 30 minutes * 60 seconds/minute * 15.5 
+nbframes_total = info.max_idx + 1;
+% almost always 27900, which is 30 minutes * 60 seconds/minute * 15.5 Hz
+nbplanes = uint16(info.otparam(3));
 
-% Read data
-data = sbxReadPMT(path, 0, nframes_total,  0, []); % size 512 x 796 x 27900
-
-% See running state of the mouse
+% Read data and running state
+data = sbxReadPMT(path, 0, nbframes_total,  0, []); % 512 x 796 x 27900
 running = sbxSpeed(mouse, date, nbrun);
-time = 1:nframes_total;
+time = 1:nbframes_total;
+
+% Reshape data as a 4D matrix (x,y,z,t)
+full_vol = reshape(data, [size(data, 1), size(data, 2), nbplanes, ...
+    floor(nbframes_total/nbplanes)]);
+%full_vol = full_vol(:,:,:,1:50); %XXX for test 512 x 796 x 30 x 3
 
 %% STEP 1: MAKE REGISTRATION
+
 disp('STEP 1: MAKE REGISTRATION')
 
-% reshape data as a 4D matrix (x,y,z,t)
-
-full_vol = reshape(data, [size(data, 1), size(data, 2), 30, 930]); %XXX
-%full_vol = permute(full_vol, [1,2,4,3]);
-full_vol = full_vol(:,:,1:29,:);
-% remove last zlevel to get an even number of zlevel
-
-%%
 % Parameters
 %nPlanesForCorrelation = 11;
 %nPlanesPerReferenceVolume = 15;
-KeepingFactor = 0.95;
+KeepingFactor = 0.8;
 BlurFactor = 1;
-ReferenceVolumeIndex = 1;
-
+%ReferenceVolumeIndex = 1:10;
+%%
 tic;
 % Make xyzt registration (Alex Fratzl)
 [correctedVolume, ZShifts, RowShiftsXYZ, ColumnShiftsXYZ,...
     RowShiftsXY, ColumnShiftsXY] = XYZTRegistrationTranslation(full_vol,...
     nPlanesForCorrelation, nPlanesPerReferenceVolume, ...
     ReferenceVolumeIndex, BlurFactor, KeepingFactor);
- %nPlanesForCorrelation, nPlanesPerReferenceVolume, ...
  toc;
 
-%% Save results
+%% STEP 2: SAVE RESULTS
+
+disp('STEP 2: SAVE RESULTS');
+
+% Choose a saving folder
+save_folder_path = 'E:\hanae_data\alextry\';
     
 % Create folders
 foldername_begin = strcat('mouse', mouse, '_date', date, '_run', num2str(nbrun));
-mkdir(['E:\hanae_data\alextry2\' foldername_begin]);
-newdir = strcat('E:\hanae_data\alextry2\', foldername_begin, '\');
+mkdir([save_folder_path foldername_begin]);
+newdir = strcat(save_folder_path, foldername_begin, '\');
+
+% Save registered data
 mkdir([newdir 'Alexregistration']);
 savingpathreg = strcat(newdir, 'Alexregistration\');
 
@@ -75,7 +75,7 @@ fig2 = figure;
 plot(ZShifts);
 saveas(fig2, strcat(savingpathreg, 'ZShifts.png'));
 
-% Save shift
+% Save shifts
 save(strcat(savingpathreg, 'ZShifts.mat'),'ZShifts');
 save(strcat(savingpathreg, 'RowShiftsXY.mat'),'RowShiftsXY');
 save(strcat(savingpathreg, 'RowShiftsXYZ.mat'),'RowShiftsXYZ');
@@ -92,6 +92,7 @@ seq = mat2gray(double(seq(:,:,:,i)));
 
 WriteVideo(title, seq);
 
+% XXX
 seq_1 = seq(:,:,1:465);
 save(strcat(savingpathreg, 'zlevel', num2str(i),...
      '_', num2str(size(full_vol, 4)), 'volumes_BF1_KF095_RVI1_1.mat'),...
@@ -111,7 +112,7 @@ end
 
 % XZ Crosssection
 res = zeros(size(full_vol, 1),size(full_vol,3),size(full_vol,4));
-
+% XXX
 for i= 1:size(full_vol, 4)
 vol_y400 = mat2gray(double(correctedVolume(:, 393:402,:,i)));
 avg_vol_y400 = mean(vol_y400, 2);
@@ -122,9 +123,7 @@ end
 save(strcat(savingpathreg, 'xzcrosssection_avgy393to402.mat'), 'res');
 WriteVideo(strcat(savingpathreg, 'xzcrosssection_avgy393to402.avi'), res);
 
-
-%% Save control: unregistered 
-
+% Save control, unregistered data
 mkdir([newdir 'noregistration']);
 savingpathunreg = strcat(newdir, 'noregistration\');
 
@@ -137,7 +136,7 @@ seq = permute(full_vol, [1,2,4,3]);
 seq = mat2gray(double(seq(:,:,:,i)));
 
 WriteVideo(title, seq);
-
+% XXX
 seq_1 = seq(:,:,1:465);
 save(strcat(savingpathunreg, 'zlevel', num2str(i),...
      '_', num2str(size(full_vol, 4)), 'volumes_BF1_KF095_RVI1_1.mat'),...
@@ -156,7 +155,7 @@ end
 
 % XZ Crosssection
 res = zeros(size(full_vol, 1),size(full_vol,3),size(full_vol,4));
-
+% XXX
 for i= 1:size(full_vol,4)
 vol_y400 = mat2gray(double(full_vol(:, 393:402,:,i)));
 avg_vol_y400 = mean(vol_y400, 2);
@@ -167,4 +166,3 @@ end
 save(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.mat'), 'res');
 WriteVideo(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.avi'), res);
 
-end
