@@ -2,10 +2,10 @@ function[RowShifts,ColumnShifts,OrderedVolumes] = OrderVolumes(...
     tvector,Size,BlurFactor,red_vol)
     
     for t=tvector
-        stackFixed(:,:,ceil(Size(3)/2)) = imgaussfilt(...
-            red_vol(:,:,ceil(Size(3)/2),t),BlurFactor);
-        RowShifts(ceil(Size(3)/2),t) = 0;
-        ColumnShifts(ceil(Size(3)/2),t) = 0;
+        stackFixed(:,:,Size(3)) = imgaussfilt(...
+            red_vol(:,:,Size(3),t),BlurFactor);
+        RowShifts(Size(3),t) = 0;
+        ColumnShifts(Size(3),t) = 0;
 
         for(i=1:ceil(Size(3)/2)-1)
             output = dftregistrationAlex(...

@@ -37,8 +37,7 @@ function[ZShifts,RowShifts,ColumnShifts] = DetermineXYZShifts(...
     disp('Find best matching planes...');
 
     [value4, value5, value6] = ComputeZshift(tvector,...
-    ReferenceVolume,OrderedVolumes,Size,StartCorrelation,EndCorrelation,...
-    StartPlane,nPlanesPerReferenceVolume);
+    ReferenceVolume,OrderedVolumes,Size);
 
     RowShifts2 = [];
     ColumnShifts2 = [];
