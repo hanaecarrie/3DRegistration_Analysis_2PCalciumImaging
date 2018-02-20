@@ -6,7 +6,7 @@ v = VideoWriter(SavingPath);
 open(v);
 
 for k = 1 : size(Matrix,3)
-    writeVideo(v, Matrix(:,:,k));
+    writeVideo(v, mat2gray(double(Matrix(:,:,k))));
 end
 
 close(v);
