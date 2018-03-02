@@ -1,22 +1,35 @@
 function[RowShifts,ColumnShifts] = DetermineXYShifts(full_vol,...
-    BlurFactor,KeepingFactor,ReferenceVolumeIndex)
-
+    BlurFactor,KeepingFactor,ReferenceVolume)
+    tic;
     Size = size(full_vol);
+    S3 = size(full_vol, 3);
+    S4 = size(full_vol, 4);
     Keep = KeepingFactor;
     red_vol = full_vol(ceil(Size(1)*(1-Keep)/2):...
         ceil(Size(1)*(1-(1-Keep)/2)),...
         ceil(Size(2)*(1-Keep)/2):...
         ceil(Size(2)*(1-(1-Keep)/2)),:,:);
-    referenceTimePoint = ReferenceVolumeIndex;
-    Tmax = Size(4);
+    chunck = floor(Size(4)/size(ReferenceVolume, 4));
+    ReferenceVolume = ReferenceVolume(...
+        ceil(Size(1)*(1-Keep)/2):...
+        ceil(Size(1)*(1-(1-Keep)/2)),...
+        ceil(Size(2)*(1-Keep)/2):...
+        ceil(Size(2)*(1-(1-Keep)/2)),:,:);
+    RowShifts = zeros(Size(3), Size(4));
+    ColumnShifts = zeros(Size(3), Size(4));
     
-    for(t = 1:Tmax)
-        for(i = 1:Size(3))
+    parfor t = 1:S4
+        reft = ReferenceVolume(:,:,:,ceil(t/chunck));
+        for i = 1:S3
+            ref = reft(:,:,i);
             output = dftregistrationAlex(fft2(imgaussfilt(...
-                red_vol(:,:,i,referenceTimePoint),BlurFactor)),...
+                ref,BlurFactor)),...
                 fft2(imgaussfilt(red_vol(:,:,i,t),BlurFactor)),100);
             RowShifts(i,t) = output(1);
             ColumnShifts(i,t) = output(2);
         end
     end
+    tEnd = toc;
+    fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
+        floor(tEnd/60),rem(tEnd,60));
 end
