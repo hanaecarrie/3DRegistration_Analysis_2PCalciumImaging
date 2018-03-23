@@ -1,4 +1,4 @@
-function WriteTiff(OutputFolder, Matrix, ChunckSize)
+function WriteTiff(OutputFolder, Matrix, Title, ChunckSize)
 % Write Tiff stacks
 % OutputFolder: string, output folder to create and where the Tiff file(s)
 % will be saved
@@ -14,8 +14,10 @@ if A == 4
 end
 SS = size(Matrix,3);
 % default input
-if nargin < 3
+if nargin <= 3
     ChunckSize = SS;
+elseif nargin < 3
+    Title = '';
 end
 NbChunck = ceil(SS/ChunckSize);
 
@@ -30,8 +32,8 @@ end
 
 % Writing Tiff
 for chunck = 1:NbChunck
-    outputFileName = strcat(OutputFolder, 'chunck_', num2str(chunck),...
-        '.tiff');
+    outputFileName = strcat(OutputFolder, Title, ...
+        'chunck_', num2str(chunck), '.tiff');
     begin = (chunck-1)*ChunckSize +1;
     writeTiff(Matrix(:, :,begin:begin+ChunckSize-1),outputFileName);
 end
