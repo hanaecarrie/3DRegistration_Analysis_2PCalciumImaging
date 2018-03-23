@@ -7,7 +7,7 @@ addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
 addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\hanae'));
 startup;
 
-for nbrun = 4
+nbrun = 3
 
     %% STEP 0: GET DATA 
 
@@ -36,14 +36,15 @@ disp('STEP 1: MAKE REGISTRATION')
 % reshape data as a 4D matrix (x,y,z,t)
 
 full_vol = reshape(data, [size(data, 1), size(data, 2), 30, 930]); %XXX
+full_vol = full_vol(1:400,:,:,:);
 %full_vol = permute(full_vol, [1,2,4,3]);
-full_vol = full_vol(:,:,1:29,:);
+%full_vol = full_vol(:,:,1:29,:);
 % remove last zlevel to get an even number of zlevel
 
 %%
 % Parameters
-%nPlanesForCorrelation = 11;
-%nPlanesPerReferenceVolume = 15;
+nPlanesForCorrelation = 30;
+nPlanesPerReferenceVolume = 30;
 KeepingFactor = 0.95;
 BlurFactor = 1;
 ReferenceVolumeIndex = 1;
@@ -167,4 +168,4 @@ end
 save(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.mat'), 'res');
 WriteVideo(strcat(savingpathunreg, 'xzcrosssection_avgy393to402.avi'), res);
 
-end
+
