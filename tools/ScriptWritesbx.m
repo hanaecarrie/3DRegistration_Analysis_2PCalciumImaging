@@ -1,81 +1,93 @@
 %% Script to write all sbx files
 
-clear all;
-close all;
-clc;
-startup;
+% clear all;
+%close all;
+%clc;
+%startup;
 
 % Getting infos
-mouse = 'DL89';
-date = '171113';
+mouse = 'DL68';
+date = '170523';
 
-for nbrun = 1
-run = nbrun;
+%for nbrun = 3
+%run = nbrun;
+run = 3;
 path = sbxPath(mouse, date, run, 'sbx');
 info = sbxInfo(path);
+% XXX
+info.otparam(3) = 1;
+info.sz = [400, 597];
+info.max_idx = 1859;
+info.nsamples = 1860;
 
 % Create folders
-path_begin = 'E:\hanae_data\alextry2\';
-path_begin = strcat(path_begin, 'mouse', mouse, '_date', date,...
-    '_run', num2str(run));
-path_unreg = strcat(path_begin, '\sbxfiles\');
-path_reg = strcat(path_begin, '\sbxfiles_reg\');
-mkdir(path_unreg);
-mkdir(path_reg);
+path_begin = 'D:\twophoton_data\2photon\scan\DL68\170523_DL68\';
+path_begin = strcat(path_begin, date, '_', mouse, '_run');
+%path_unreg = strcat(path_begin, '\sbxfiles\');
+%path_reg = strcat(path_begin, '\sbxfiles_reg\');
+%mkdir(path_unreg);
+%mkdir(path_reg);
 
 % Unregistered (warning because double to int16)
-nbplanes = info.otparam(3);
-
-for plane = 1 : nbplanes-1
-    savepath = strcat(path_unreg, 'plane', num2str(plane));
-    myfolder = strcat(path_begin, '\noregistration\');
-    oldfolder = cd(myfolder);
-    liste = [];
-    indice = strcat('zlevel', num2str(plane), '_');
-    listfiles = dir(strcat(indice, '*.mat'));
-    for i = 1 : length(listfiles)
-        liste = cat(1, liste, listfiles(i, :).name);
-    end
-    seq = [];
-    for num = 1: size(liste,1)
-        disp(liste(num, :)); % control right order
-        seqi = load(strcat(myfolder,liste(num, :)));
-        fn = fieldnames(seqi)';
-        seqi = seqi.(fn{1});
-        seq = cat(3, seq, seqi);
-    end
-    sbxWrite(savepath, seq, info);
-end
-
-clear savepath;
+% nbplanes = info.otparam(3);
+% 
+% for plane = 1 : nbplanes-1
+%     savepath = strcat(path_unreg, 'plane', num2str(plane));
+%     myfolder = strcat(path_begin, '\noregistration\');
+%     oldfolder = cd(myfolder);
+%     liste = [];
+%     indice = strcat('zlevel', num2str(plane), '_');
+%     listfiles = dir(strcat(indice, '*.mat'));
+%     for i = 1 : length(listfiles)
+%         liste = cat(1, liste, listfiles(i, :).name);
+%     end
+%     seq = [];
+%     for num = 1: size(liste,1)
+%         disp(liste(num, :)); % control right order
+%         seqi = load(strcat(myfolder,liste(num, :)));
+%         fn = fieldnames(seqi)';
+%         seqi = seqi.(fn{1});
+%         seq = cat(3, seq, seqi);
+%     end
+%     sbxWrite(savepath, seq, info);
+% end
+% 
+% clear savepath;
 
 % Registered (warning because double to int16) 
-nbplanes = info.otparam(3);
+nbplanes = 14;%info.otparam(3);
 
-for plane = 1 : nbplanes-1
-    savepath = strcat(path_reg, 'plane', num2str(plane), '_reg');
-    myfolder = strcat(path_begin, '\Alexregistration\');
-    oldfolder = cd(myfolder);
-    liste = [];
-    indice = strcat('zlevel', num2str(plane), '_');
-    listfiles = dir(strcat(indice, '*.mat'));
-    for i = 1 : length(listfiles)
-        liste = cat(1, liste, listfiles(i, :).name);
-    end
-    seq = [];
-    for num = 1: size(liste,1)
-        disp(liste(num, :)); % control right order
-        seqi = load(strcat(myfolder,liste(num, :)));
-        fn = fieldnames(seqi)';
-        seqi = seqi.(fn{1});
-        seq = cat(3, seq, seqi);
-    end
+for plane = 1:nbplanes
+    %savepath = strcat(path_reg, 'plane', num2str(plane), '_reg');
+    nbrun = run*100 + (plane);
+    newfolder = strcat(path_begin, num2str(nbrun));
+    mkdir(newfolder);
+    savepath = strcat(newfolder, '\', mouse, '_', date,...
+    '_', num2str(nbrun-1), '.sbx');
+%     myfolder = strcat(path_begin, '\Alexregistration\');
+%     oldfolder = cd(myfolder);
+%     liste = [];
+%     indice = strcat('zlevel', num2str(plane), '_');
+%     listfiles = dir(strcat(indice, '*.mat'));
+%     for i = 1 : length(listfiles)
+%         liste = cat(1, liste, listfiles(i, :).name);
+%     end
+%     seq = [];
+%     for num = 1: size(liste,1)
+%         %disp(liste(num, :)); % control right order
+%         seqi = load(strcat(myfolder,liste(num, :)));
+%         fn = fieldnames(seqi)';
+%         seqi = seqi.(fn{1});
+%         seq = cat(3, seq, seqi);
+%     end
+    seq = volumereg3(:,:,plane, :);
+    seq = squeeze(seq);
     sbxWrite(savepath, seq, info);
 end
 
-clear savepath;
+%clear savepath;
 
-end
+%end
 
 %% Change files locations and rename
 
