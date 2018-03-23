@@ -7,8 +7,8 @@ clc;
 tStart = tic;
 mouse = 'DL89';
 date = '171122';
-run = 4;
-cd 'E:\hanae_data\alextry2\mouseDL89_date171122_run4\Alexregistration\';
+run = 1;
+cd 'E:\hanae_data\alextry2\mouseDL89_date171122_run1\noregistration\';
 list = dir('*zlevel*');
 names = struct2cell(list);
 names = names(1,:);
@@ -28,8 +28,8 @@ for i = 1:29
 end
 
 clear seq_1; clear seq_2;
-savingpath = strcat('E:\hanae_data\alextry\mouse', mouse, '_date', ...
-    date, '_run', num2str(run), '\')
+%savingpath = strcat('E:\hanae_data\alextry\mouse', mouse, '_date', ...
+%    date, '_run', num2str(run), '\')
 
 
 %% crop data
@@ -144,7 +144,7 @@ save(strcat(savingpath, '\ref2reg'), 'ref2reg');
 %% Z Shift
 
 [RowShifts,ColumnShifts,ZShifts] = ComputeZshiftInterpolate(...
-    ref2reg(:,:,:,:), volumereg1(:,:,:,:), 5);
+    ref2reg(:,:,:,:), volumereg1(:,:,:,:), 3);
 % [RowShifts2,ColumnShifts2,ZShifts2] = ComputeZshiftInterpolate(...
 %     ref2reg(:,:,:,4:6), volumereg1(:,:,:,91:180), 5);
 % [RowShifts3,ColumnShifts3,ZShifts3] = ComputeZshiftInterpolate(...
@@ -204,36 +204,36 @@ save(strcat(savingpath, '\volumereg2'), 'volumereg2');
 savingpath2 = 'E:\hanae_data\alextry\mouseDL89_date171122_run2\volumereg2\';
 WriteTiff(savingpath2,volumereg2,899);
 
-% %% New XY reg : reference
-% 
-% % average every n frames
-% ref3 = zeros(w, h, zp, ts/n);
-% for i = 1:ts/n
-%     for z = 1:size(volumereg2, 3)
-%         a = volumereg2(:,:,z,(i-1)*n+1:i*n);
-%         a = squeeze(permute(a, [1, 2, 4, 3]));
-%         a = mean(a, 3);
-%         ref3(:,:,z,i) = a;
-%     end
-% end
-% 
-% % Determine reg for the reference
-% [Ref3RowShifts,Ref3ColumnShifts] = DetermineXYShifts(ref3(:,:,:,:),...
-%     BlurFactor,KeepingFactor,ref3(:,:,:,1));
-% 
-% % Apply reg to reference
-% [ref3reg] = ApplyXYShifts(ref3, Ref3RowShifts, Ref3ColumnShifts);
-% 
-% %% XY registration to the moving reference
-% 
-% [RowShiftsXY2, ColumnShiftsXY2] = DetermineXYShifts(volumereg2,...
-%     BlurFactor,KeepingFactor,ref3reg);
-% 
-% [volumereg3] = ApplyXYShifts(volumereg2, RowShiftsXY2, ColumnShiftsXY2);
-% 
-% tEnd = toc;
-% fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
-%     floor(tEnd-tStart/60),rem(tEnd-tStart,60));
+ %% New XY reg : reference
+
+% average every n frames
+ref3 = zeros(w, h, zp, ts/n);
+for i = 1:ts/n
+    for z = 1:size(volumereg2, 3)
+        a = volumereg2(:,:,z,(i-1)*n+1:i*n);
+        a = squeeze(permute(a, [1, 2, 4, 3]));
+        a = mean(a, 3);
+        ref3(:,:,z,i) = a;
+    end
+end
+
+% Determine reg for the reference
+[Ref3RowShifts,Ref3ColumnShifts] = DetermineXYShifts(ref3(:,:,:,:),...
+    BlurFactor,KeepingFactor,ref3(:,:,:,1));
+
+% Apply reg to reference
+[ref3reg] = ApplyXYShifts(ref3, Ref3RowShifts, Ref3ColumnShifts);
+
+%% XY registration to the moving reference
+
+[RowShiftsXY2, ColumnShiftsXY2] = DetermineXYShifts(volumereg2,...
+    BlurFactor,KeepingFactor,ref3reg);
+
+[volumereg3] = ApplyXYShifts(volumereg2, RowShiftsXY2, ColumnShiftsXY2);
+
+tEnd = toc;
+fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
+    floor(tEnd-tStart/60),rem(tEnd-tStart,60));
 
 %% Save files
 
@@ -251,15 +251,50 @@ save(strcat(savingpath, '\ColumnShiftsXY2'), 'ColumnShiftsXY2');
 
 
 %% Save sbx file
-%  
-% %see script ScriptWritesbx
-%  
-% %% Affine alignment
-% 
-% newrun = 322;
-% path = sbxPath(mouse, date, newrun, 'sbx');
-% out = sbxAlignAffineDFT({path}, 'refsize', size(volumereg3, 4),...
-%     'refoffset', n);
-% sbxSaveAlignedSBX(path);
+
+% Getting infos
+mouse = 'DL68';
+date = '170523';
+run = 3;
+
+path = sbxPath(mouse, date, run, 'sbx');
+info = sbxInfo(path);
+% XXX
+info.otparam(3) = 1;
+info.sz = [400, 597];
+info.max_idx = 1859;
+info.nsamples = 1860;
+otwave = info.otwave;
+
+
+% Create folders
+path_begin = 'D:\twophoton_data\2photon\scan\DL68\170523_DL68\';
+path_begin = strcat(path_begin, date, '_', mouse, '_run');
+
+% Registered (warning because double to int16) 
+nbplanes = 14;%info.otparam(3);
+
+for plane = 1:nbplanes
+    info.otwave = otwave(plane);
+    nbrun = run*100 + (plane);
+    newfolder = strcat(path_begin, num2str(nbrun));
+    mkdir(newfolder);
+    savepath = strcat(newfolder, '\', mouse, '_', date,...
+    '_', num2str(nbrun-1), '.sbx');
+    seq = volumereg3(:,:,plane, :);
+    seq = squeeze(seq);
+    sbxWrite(savepath, seq, info);
+end
+ 
+%% Affine alignment
+
+n = 30; % chunck size
+for newrun = 301:329
+path = sbxPath(mouse, date, newrun, 'sbx');
+out = sbxAlignAffineDFT({path}, 'refsize', size(volumereg3, 4),...
+    'refoffset', n);
+sbxSaveAlignedSBX(path);
+end
+
 
 
