@@ -2,10 +2,21 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshiftInterpolate(...
     ReferenceVolumes, Volume, WidthCorr)
 
     tic;
+
     % Parameters
     Size = size(Volume);
     nbChunck = size(ReferenceVolumes, 4); % nb chuncks of the reference
     Chunck = floor(Size(4)/nbChunck); % nb frames by chunck of ref
+    
+    % Remove edges
+    edges = sbxRemoveEdges('DL');
+%     [Edges, ~] = detectEmptyEdges(Volume);
+%     Edges(Edges>30) = NaN;
+%     edges = ceil(nanmean(Edges))
+    Volume(1:edges(1),:,:,:) = NaN;
+    Volume(Size(1)-edges(2):end,:,:,:) = NaN;
+    Volume(:,1:edges(3),:,:) = NaN;
+    Volume(:,:,:,Size(2)-edges(4),:,:) = NaN;
 
     % Preallocating space for output variables
     RowShifts = zeros(Size(3)-WidthCorr,Size(4));
