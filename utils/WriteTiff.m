@@ -17,7 +17,7 @@ SS = size(Matrix,3);
 if nargin <= 3
     ChunckSize = SS;
 elseif nargin < 3
-    Title = '';
+    Title = 'Movie';
 end
 NbChunck = ceil(SS/ChunckSize);
 
@@ -33,7 +33,7 @@ end
 % Writing Tiff
 for chunck = 1:NbChunck
     outputFileName = strcat(OutputFolder, Title, ...
-        'chunck_', num2str(chunck), '.tiff');
+        '_chunck_', num2str(chunck), '.tiff');
     begin = (chunck-1)*ChunckSize +1;
     writeTiff(Matrix(:, :,begin:begin+ChunckSize-1),outputFileName);
 end
