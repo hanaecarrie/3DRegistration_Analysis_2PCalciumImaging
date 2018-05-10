@@ -1,5 +1,7 @@
-function [volumereg3, savingpath] = XYZXYRegistration(mouse, date, runs, n,...
-    BlurFactor, KeepingFactor, PlaneRemove, savingpathbegin, nbchunck)
+function [volumereg3, savingpath] = XYZXYRegistration(inputsbxpaths, ...
+    mouse, date, runs, channel,...
+    n, BlurFactor, KeepingFactor, PlanesCorr, ...
+    savingpathbegin, nbchunck)
 
 for run = runs
     tStart = tic;
@@ -14,11 +16,15 @@ savingpath = strcat(savingpath, mouse, '_date', date, '_run',...
 mkdir(savingpath);
 
 % load data
-sbxpath = sbxPath(mouse, date, run, 'sbx');
-info = sbxInfo(sbxpath);
-w = info.sz(1); h = info.sz(2); zp = length(info.otwave);
-ts = (info.max_idx+1)/(length(info.otwave));
-volume = sbxReadPMT(sbxpath);
+% inputsbxpath = sbxPath(mouse, date, run, 'sbx');
+info = sbxInfo(inputsbxpaths(idx,:));
+% w = info.sz(1); h = info.sz(2);
+% zp = length(info.otwave);
+% ts = (info.max_idx+1)/(length(info.otwave));
+zp = 115; ts = 200;
+volume = sbxReadPMT(inputsbxpaths(idx,:), 0, 30000, channel);
+idx = idx + 1;
+w = size(volume, 1); h = size(volume, 2);
 nbframes = size(volume,3);
 volume = reshape(volume, [w, h, zp, ts]);
 % crop or ds
