@@ -1,8 +1,8 @@
-function [] = saveSBXfilesPerPlane(mouse, date, run, volumereg3, extension, ...
+function [] = saveSBXfilesPerPlane(sbxpath, mouse, date, run, volumereg3, extension, ...
     pathbegin)
 % savesbxfiles
 
-sbxpath = sbxPath(mouse, date, run, 'sbx');
+% sbxpath = sbxPath(mouse, date, run, 'sbx');
 info = sbxInfo(sbxpath);
 info.otparam(3) = 1;
 info.sz(1) = size(volumereg3, 1);
