@@ -164,7 +164,6 @@ save(strcat(savingpath, '\ColumnShiftsXY2'), 'ColumnShiftsXY2');
 
 % save sbx file
 info = sbxInfo(sbxpath);
-nbplanes = info.otparam(3);
 info.otparam(3) = 1;
 info.sz = [400, 597];
 info.max_idx = 1859;
@@ -174,7 +173,7 @@ path_begin = strcat('D:\twophoton_data\2photon\scan\', mouse, ...
     '\', date, '_', mouse, '\');
 path_begin = strcat(path_begin, date, '_', mouse, '_run');
 
-for plane = 1:nbplanes
+for plane = 1:zp
     info.otwave = otwave(plane);
     nbrun = run*100 + (plane);
     newfolder = strcat(path_begin, num2str(nbrun));
@@ -187,7 +186,7 @@ for plane = 1:nbplanes
 end
 end
 % affine alignment
-for i = 1:nbplanes
+for i = 1:zp
     if run ~= 3 || i > 4
     newrun = run*100+i;
     newpath = sbxPath(mouse, date, newrun, 'sbx');
@@ -205,7 +204,7 @@ end
 % REFERENCE 1st RUN
 % load 1st run
 volumeregaffine1 = [];
-for i = 1:nbplanes
+for i = 1:zp
     pathplane = strcat(...
         'D:\twophoton_data\2photon\scan\', mouse, '\', date, ...
         '_', mouse, '\', date, '_', mouse, '_run',...
@@ -215,6 +214,7 @@ for i = 1:nbplanes
     volumeregaffine1 = cat(4, volumeregaffine1, plane);
 end
 volumeregaffine1 = permute(volumeregaffine1, [1,2,4,3]);
+%%
 % average every n frames
 refacrossruns = zeros(w, h, zp, ts/n);
 for i = 1:ts/n
@@ -232,13 +232,13 @@ refacrossruns(:,:,:,:),...
 % apply shifts
 [refAreg] = ApplyXYShifts(refacrossruns, RefARowShifts,...
     RefAColumnShifts);
-
+%%
 % APPLY REGISTRATION TO OTHER RUNS
-for run = 2:4
+for run = 1:4
 % load data
 volumeregaffine = [];
 i = 1;
-for i = 1:nbplanes
+for i = 1:zp
     pathplane = strcat(...
         'D:\twophoton_data\2photon\scan\', mouse, '\', date, ...
         '_', mouse, '\', date, '_', mouse, '_run',...
@@ -248,13 +248,17 @@ for i = 1:nbplanes
     volumeregaffine = cat(4, volumeregaffine, plane);
 end
 volumeregaffine = permute(volumeregaffine, [1,2,4,3]);
-% determine shifts
-[RowShiftsXYA, ColumnShiftsXYA] = DetermineXYShifts(...
-    volumeregaffine,...
-    BlurFactor,KeepingFactor,refAreg);
-% apply shifts
-[volumeregacrossruns] = ApplyXYShifts(volumeregaffine, ...
-    RowShiftsXYA, ColumnShiftsXYA);
+
+if run ~= 1
+    % determine shifts
+    [RowShiftsXYA, ColumnShiftsXYA] = DetermineXYShifts(...
+        volumeregaffine,...
+        BlurFactor,KeepingFactor,refAreg);
+    % apply shifts
+    [volumeregacrossruns] = ApplyXYShifts(volumeregaffine, ...
+        RowShiftsXYA, ColumnShiftsXYA);
+end
+
 % save sbx files
 path = sbxPath(mouse, date, run, 'sbx');
 info = sbxInfo(path);
@@ -263,21 +267,24 @@ info.sz = [400, 597];
 info.max_idx = 1859;
 info.nsamples = 1860;
 otwave = info.otwave;
-nbplanes = info.otparam(3);
 % create folders
 path_begin = strcat('D:\twophoton_data\2photon\scan\', mouse,...
     '\', date, '_', mouse,'\');
 path_begin = strcat(path_begin, date, '_', mouse, '_run');
 % save sbx files
-for plane = 1:nbplanes
+for plane = 1:zp
     info.otwave = otwave(plane);
     nbrun = run*1000 + (plane);
     newfolder = strcat(path_begin, num2str(nbrun));
     mkdir(newfolder);
     savepath = strcat(newfolder, '\', mouse, '_', date,...
     '_', num2str(nbrun-1), '.sbx');
-    seq = volumeregacrossruns(:,:,plane, :);
-    seq = squeeze(seq);
+    if run ~= 1
+        seq = volumeregacrossruns(:,:,plane, :);
+        seq = squeeze(seq);
+    else
+        seq = volumeregaffine(:,:,plane,:);  
+    end
     sbxWrite(savepath, seq, info);
 end
 
@@ -285,7 +292,7 @@ end
 
 %% ROIs
 
-for ni = 1:nbplanes
+for ni = 1:zp
     disp(ni)
     n1 = 1000+ni;
     n2 = 2000+ni;
