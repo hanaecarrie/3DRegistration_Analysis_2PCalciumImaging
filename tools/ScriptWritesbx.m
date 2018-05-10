@@ -11,7 +11,7 @@ date = '170523';
 
 %for nbrun = 3
 %run = nbrun;
-run = 3;
+run = 4;
 path = sbxPath(mouse, date, run, 'sbx');
 info = sbxInfo(path);
 % XXX
@@ -21,9 +21,10 @@ info.max_idx = 1859;
 info.nsamples = 1860;
 
 % Create folders
-path_begin = 'D:\twophoton_data\2photon\scan\DL68\170523_DL68\';
-path_begin = strcat(path_begin, date, '_', mouse, '_run');
-%path_unreg = strcat(path_begin, '\sbxfiles\');
+path_begin = 'E:\hanae_data\Dura\registrationFiles\24-Apr-2018_18-06-30\affineplanes\170523_DL68_run';
+% path_begin = 'D:\twophoton_data\2photon\scan\DL68\170523_DL68\';
+% path_begin = strcat(path_begin, date, '_', mouse, '_run');
+% %path_unreg = strcat(path_begin, '\sbxfiles\');
 %path_reg = strcat(path_begin, '\sbxfiles_reg\');
 %mkdir(path_unreg);
 %mkdir(path_reg);
@@ -55,7 +56,7 @@ path_begin = strcat(path_begin, date, '_', mouse, '_run');
 % clear savepath;
 
 % Registered (warning because double to int16) 
-nbplanes = 14;%info.otparam(3);
+nbplanes = 15;%info.otparam(3);
 
 for plane = 1:nbplanes
     %savepath = strcat(path_reg, 'plane', num2str(plane), '_reg');
