@@ -87,3 +87,46 @@ graphtitle = strcat('mouse:', mouse, ', date:', date,...
 title(graphtitle);
 legend('running state', 'mean Z shift');
 
+%%
+
+figure;
+% yyaxis left; plot(x, abs(avgrun));
+% xlabel('time (min)'); ylabel('arbitrary unit'); axis([1 30 0 20]);
+plot(x, Zsdepth', '-');set(gca, 'ydir', 'reverse');
+ylabel('brain depth from surface (microm)'); axis([1 30  50 120]);
+% hold on;
+% plot(x, abs(avgrun));
+graphtitle = strcat('mouse:', 'DL68', ', date:', '170523',...
+    ', run:3');
+title(graphtitle);
+legend('running state', 'Z shift per plane');
+%%
+load('ZShifts.mat')
+Z = ZShifts; Z = Z(4:end, :);
+for i = 1:9
+Z(i,:) = Z(i,:)+i+3;
+end
+plot(Z'); set(gca, 'ydir', 'reverse')
+Zs = Z;
+for i = 1:9
+Zs(i,:) = smooth(Zs(i,:));
+end
+plot(Zs'); set(gca, 'ydir', 'reverse')
+x = linspace(1, 1800, 1860);
+x = x/60;
+Zsdepth = Zs;
+for i = 1:9
+Zsdepth(i,:) = Zsdepth(i,:)-i-3;
+end
+for i = 1:9
+Zsdepth(i,:) = 6.0714*(i+3-1)+40+6.0714*Zsdepth(i,:);
+end
+Zsdepth1 = Zsdepth;
+running = sbxSpeed('DL68','170523', 1);
+n = 15; % average every n values
+a = reshape(running,[],1); % arbitrary data
+avgrun = arrayfun(@(i) mean(a(i:i+n-1)),1:n:length(a)-n+1)';
+runstate = abs(avgrun);
+runstate1 = runstate;
+Zdepthall = cat(2, Zsdepth1, Zsdepth2, Zdepthall);
+runstateall = cat(1, runstate1, runstate2, runstateall);
