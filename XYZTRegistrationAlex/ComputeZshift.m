@@ -20,12 +20,17 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
         end
         Mean = nanmean(Correlations);
         [~,J] = max(Mean);
-            disp(strcat('Zshift volume n°', num2str(t), ':  ',...
-                num2str(J-WidthCorr-1)));
-        
-        x = J-4:0.01:J+4;
-        FitOrder = 5;
-        P = polyfit(J-4:J+4, Mean(J-4:J+4),FitOrder);
+        disp(strcat('Zshift volume n°', num2str(t), ':  ',...
+            num2str(J-WidthCorr-1)));
+        if  (J-5 > 0) & (J+5 <= size(Mean))
+            idx = 5;
+        else
+            idx = (min([length(Mean)-J, J-1]));
+        end
+        % Estimate Z Shift
+        x = J-idx:0.01:J+idx;
+        FitOrder = idx;
+        P = polyfit(J-idx:J+idx, Mean(J-idx:J+idx),FitOrder);
         CorrelationFit = polyval(P, x);
         [~,I] = max(CorrelationFit);
         output = dftregistrationAlex(fft2(mean(reft,3)),...
