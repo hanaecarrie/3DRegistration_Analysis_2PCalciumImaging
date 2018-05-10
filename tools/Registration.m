@@ -1,6 +1,6 @@
 function [] = Registration(mouse, date, runs, ...
-    BlurFactor, KeepingFactor, n, PlaneRemove,...
-    nbchunck, m1, savingpathbegin)
+    BlurFactor, KeepingFactor, n, PlanesCorr,...
+    nbchunck, m1, savingpathbegin, paths)
 % Registration per run: XYZXY, save sbx files *100, affine reg / plane
 % Parameters example
 % mouse = 'DL89';
@@ -24,16 +24,24 @@ function [] = Registration(mouse, date, runs, ...
 tS = tic;
 
 if nargin <10
-    savingpathbegin = 'E:\hanae_data\registrationFiles\';
+    savingpathbegin = 'E:\hanae_data\Dura\registrationFiles\';
 end
-
+idx = 0;
 for run = runs
+    idx = idx+1;
     % XY, Z, XY registration
     [volumereg3, savingpath] = XYZXYRegistration(mouse, date, run, n,...
-        BlurFactor, KeepingFactor, PlaneRemove, ...
+        BlurFactor, KeepingFactor, PlanesCorr,...
         savingpathbegin, nbchunck);
+%     load volumereg3
+%     pathvolumereg3 = strcat(savingpathbegin, paths(idx,:),'\', mouse, '_', ...
+%         date, '_', num2str(run), '\volumereg3\',...
+%         mouse, '_', date, '_', num2str(run), '_volumereg3.sbx');
+%     volumereg3 = sbxReadPMT(pathvolumereg3);
+%     volumereg3 = reshape(volumereg3, [512, 796, 30, 930]);
     % save sbx files per plane
-     saveSBXfilesPerPlane(mouse, date, run, volumereg3, m1, savingpath);
+    savingpath = strcat(savingpathbegin, paths(idx,:),'\');
+    saveSBXfilesPerPlane(mouse, date, run, volumereg3, m1, savingpath);
     % affine alignement per plane
     zp = size(volumereg3, 3);
     newruns = (1:zp)+ m1*run;
