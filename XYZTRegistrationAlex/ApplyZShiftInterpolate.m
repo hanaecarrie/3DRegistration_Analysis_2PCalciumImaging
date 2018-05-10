@@ -15,11 +15,6 @@ function[correctedVolume] = ApplyZShiftInterpolate(Volume,...
                     imtranslate((correctedVolume(:,:,plane,t)),...
                     [ColumnShifts(plane,t) RowShifts(plane,t)]); 
                 fri(plane) = plane + ZShifts(plane,t);
-                if plane > 1 % ensuring strict monotony
-                    if fri(plane) - fri(plane-1) <= 0
-                        fri(plane) = fri(plane-1)+0.01;
-                    end
-                end
             else
                 correctedVolume(:,:,plane,t) = double(Volume(:,:,plane,t));
             end
