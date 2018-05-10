@@ -1,5 +1,5 @@
 function[correctedVolume] = ApplyXYZShifts(fullVolume,...
-    ZShifts, RowShifts, ColumnShifts)
+    ZShifts, ColumnShifts, RowShifts)
 
     correctedVolume = fullVolume;
 
