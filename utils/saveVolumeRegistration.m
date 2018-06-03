@@ -1,38 +1,45 @@
 function [] = saveVolumeRegistration(savingpath, volume, namefile,...
-    mouse, date, run, channel, nbchuncktiff, type)
+    mouse, date, run, channel, varargin)
 
- tic;
+p = inputParser;
+    addOptional(p, 'server', 'megatron');
+    addOptional(p, 'type', 'both');
+    addOptional(p, 'nbchuncktiff', 1);
+    if length(varargin) == 1 && iscell(varargin{1}), varargin = varargin{1}; end
+    parse(p, varargin{:});
+    p = p.Results;
+
+ tStartsVR = tic;
  
 [w, h, zp, ts] = size(volume);
 
-if nargin < 9
-    type = 'both';
-end
-if nargin < 8
-    nbchuncktiff = 1;
-end
-sizechunck = zp*ts/nbchuncktiff;
-if mod(zp*ts, nbchuncktiff) ~= 0
-    error("nbchuncktiff should divide the number of frames");
+sizechunck = zp*ts/p.nbchuncktiff;
+if mod(zp*ts, p.nbchuncktiff) ~= 0
+    error('nbchuncktiff should divide the number of frames');
 end
 
 savingpathv = strcat(savingpath, '\', namefile, '\');
 
-if strcmp(type,'tif') || strcmp(type,'both') 
-WriteTiffHanae(savingpathv, mat2gray(double(volume)), ...
+if strcmp(p.type,'tif') || strcmp(p.type,'both') 
+WriteTiffHanae(savingpathv, uint16(volume), ...
     strcat(mouse,'_', date,'_', num2str(run),'_', num2str(channel),...
     '_', namefile), sizechunck);
 end
-if strcmp(type,'sbx') || strcmp(type,'both')
-    sbxpath = sbxPath(mouse, date, run, 'sbx');
+if strcmp(p.type,'sbx') && ~exist(savingpathv, 'dir')
+    mkdir(savingpathv);
+end
+if strcmp(p.type,'sbx') || strcmp(p.type,'both')
+    sbxpath = sbxPath(mouse, date, run, 'sbx', 'server', p.server);
     info = sbxInfo(sbxpath);
+    info.recordsPerBuffer = w;
+    info.nchan = 1;
     sbxWrite(strcat(savingpathv, mouse,'_', date,'_', ...
         num2str(run),'_', num2str(channel),'_', namefile),...
         reshape(volume, [w,h,zp*ts]), info);
 end
 
-tEnd = toc;
-fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
-    floor((tEnd)/60),rem(tEnd,60));
+tEndsVR = toc(tStartsVR);
+fprintf('saveVolumeRegistration in %d minutes and %f seconds\n.', ...
+    floor((tEndsVR)/60),rem(tEndsVR,60));
 
 end
