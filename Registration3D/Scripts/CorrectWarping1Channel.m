@@ -1,5 +1,5 @@
-function [outputpaths, EdgesWarp] = CorrectWarping2Channels(inputpath, outputpath,...
-    mouse, date, run, channel, blurfactor, edges, chunck, sizedata, server)
+function [outputpath, EdgesWarp] = CorrectWarping1Channel(inputpath, ...
+    outputpath, mouse, date, run, blurfactor, edges, chunck)
 % CORRECTWARPING2CHANNELS: Compute, apply and return xy shifts 
 % along the z axis for a given volume
 % 
@@ -18,33 +18,24 @@ function [outputpaths, EdgesWarp] = CorrectWarping2Channels(inputpath, outputpat
 %   Outputs:
 %     none
 
-if nargin < 11
-    server = 'megatron';
-end
-
-tStartCW2C = tic; % starting time
+tStartCW1C = tic; % starting time
 
 % load 2 channels
-planes = sizedata(3);
-times = sizedata(4);
-data1 = sbxReadPMT(inputpath, 0, planes*times, channel);
-
-otherchannel = ~channel;
-
-data2 = sbxReadPMT(inputpath, 0, planes*times, otherchannel);
-
-if times > 1 % if multiple volumes
+data1 = sbxReadPMT(inputpath, 0, 30000, 0);
+info = sbxInfo(inputpath); % get info
+if info.otparam(3) ~= (info.max_idx-1) % if multiple volumes
     % reshape data into 4D format
-    data1 = reshape(data1, sizedata);
-    data2 = reshape(data2, sizedata);
+    data1 = reshape(data1, [size(data1,1),size(data1,2),...
+        info.otparam(3), floor(size(data1,3)/info.otparam(3))]);
+    times = size(data1, 4); % get number of volumes
+else
+    times = 1; % set number of volumes to 1 if single volume
 end
-
+nbplanes = size(data1, 3); % get number of planes
 data1 = data1(edges(3)+1:end-edges(4),edges(1)+1:end-edges(2),:,:);
 % crop data
-data2 = data2(edges(3)+1:end-edges(4),edges(1)+1:end-edges(2),:,:);
-% crop data
-RowShiftsW = zeros(times, planes); % initialize row shifts
-ColumnShiftsW = zeros(times, planes); % initialize column shifts
+RowShiftsW = zeros(times, nbplanes); % initialize row shifts
+ColumnShiftsW = zeros(times, nbplanes); % initialize column shifts
 % prepare parallelisation: out = data1 in cell format 
 out = cell(1, times);
 for t = 1:times
@@ -56,7 +47,7 @@ openParallel(); % uses nb_cpu - 2
 parfor t = 1:times % iterate over each volumes in time
     disp(t);
     volume = out{t};
-    for z = 2:planes % iterate over each plane
+    for z = 2:nbplanes % iterate over each plane
         sliceref = volume(:,:,z-1); % reference
         % Determine XY shifts on the first channel
         output = dftregistrationAlex(fft2(imgaussfilt(...
@@ -68,10 +59,6 @@ parfor t = 1:times % iterate over each volumes in time
         % Apply XY shifts
         volume(:,:,z) = ...
                     imtranslate((volume(:,:,z)),...
-                    [ColumnShiftsW(t,z) RowShiftsW(t,z)]);
-        % Applying the same shifts to the other channel
-        data2(:,:,z,t) = ...
-                    imtranslate((data2(:,:,z,t)),...
                     [ColumnShiftsW(t,z) RowShiftsW(t,z)]);
     end
     out{t} = volume;
@@ -86,8 +73,6 @@ clear('out');
 % NB: edges = [left, right, top, bottom] !!!
 data1 = padarray(data1, [edges(3), edges(1)], 'pre');
 data1 = padarray(data1, [edges(4), edges(2)], 'post');
-data2 = padarray(data2, [edges(3), edges(1)], 'pre');
-data2 = padarray(data2, [edges(4), edges(2)], 'post');
 EdgesWarp = detectEmptyEdges(data1);
 
 % saving wrapreg results after creating directory (if necessary)
@@ -95,22 +80,14 @@ if ~exist(outputpath, 'dir')
     mkdir(outputpath);
 end
 dirchannel1 = strcat(outputpath, mouse, '_', date, '_', num2str(run),...
-    '_', num2str(channel), '\');
-dirchannel2 = strcat(outputpath, mouse, '_', date, '_', num2str(run),...
-    '_', num2str(otherchannel), '\');
+    '_', num2str(0), '\');
 if ~exist(dirchannel1, 'dir')
     mkdir(dirchannel1);
 end
-if ~exist(dirchannel2, 'dir')
-    mkdir(dirchannel2);
-end
-
+    
 saveVolumeRegistration(dirchannel1, ...
-    data1, 'warpreg', mouse, date, run, channel, 'nbchuncktiff', ...
-    chunck, 'type', 'sbx', 'server', server);
-saveVolumeRegistration(dirchannel2, ...
-    data2, 'warpreg', mouse, date, run, otherchannel, 'nbchuncktiff',...
-    chunck,'type', 'sbx', 'server', server);
+    data1, 'warpreg', mouse, date, run, 0, 'nbchuncktiff', chunck,...
+    'type', 'sbx');
 
 % saving shifts after creating directory (if necessary)
 if ~exist(strcat(dirchannel1, '\ShiftsRow\'), 'dir')
@@ -124,18 +101,14 @@ save(strcat(dirchannel1, '\ShiftsRow\RowShiftsW'), 'RowShiftsW');
 save(strcat(dirchannel1, '\ShiftsColumn\ColumnShiftsW'), 'ColumnShiftsW');
 
 % outputpaths
-outputpaths = cell(2,1);
-outputpaths{1} = strcat(outputpath,  mouse, '_', date, '_',...
-    num2str(run), '_', num2str(channel),'\warpreg\', mouse, '_',...
-    date, '_', num2str(run), '_', num2str(channel), '_warpreg.sbx'); 
-outputpaths{2} = strcat(outputpath,  mouse, '_', date, '_',...
-    num2str(run), '_', num2str(otherchannel),'\warpreg\', mouse, '_',...
-    date, '_', num2str(run), '_', num2str(otherchannel), '_warpreg.sbx');
-clear data1; clear data2;
+outputpath = strcat(outputpath,  mouse, '_', date, '_',...
+    num2str(run), '_', num2str(0),'\warpreg\', mouse, '_',...
+    date, '_', num2str(run), '_', num2str(0), '_warpreg.sbx'); 
+clear data1;
 
-tEndCW2C = toc(tStartCW2C); % ending time
-fprintf('CorrectWarping2Channels in %d minute(s) and %f seconds\n.', ...
-    floor((tEndCW2C-tStartCW2C)/60),rem(tEndCW2C,60));
+tEndCW1C = toc(tStartCW1C); % ending time
+fprintf('CorrectWarping1Channel in %d minute(s) and %f seconds\n.', ...
+    floor((tEndCW1C-tStartCW1C)/60),rem(tEndCW1C,60));
 
 end
 
