@@ -10,9 +10,9 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshiftInterpolate(...
     
     % Remove edges
     Volume(1:Edges(1),:,:,:) = NaN;
-    Volume(Size(1)-Edges(2):end,:,:,:) = NaN;
+    Volume(Size(1)-Edges(2)+1:end,:,:,:) = NaN;
     Volume(:,1:Edges(3),:,:) = NaN;
-    Volume(:,Size(2)-Edges(4):end,:,:) = NaN;
+    Volume(:,Size(2)-Edges(4)+1:end,:,:) = NaN;
     %Downsample
     Volume = Volume(1:2:end,1:2:end,:,:);
     ReferenceVolumes = ReferenceVolumes(1:2:end,1:2:end,:,:);
