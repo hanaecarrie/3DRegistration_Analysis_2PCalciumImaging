@@ -3,7 +3,6 @@
 
 clear all;
 close all;
-clc;
 
 %% Parameters
 
@@ -12,33 +11,49 @@ date = '180330';
 
 %% Volume
 
-runvolume = 7; % volume
-pathvolumes = sbxPath(mouse, date, runvolume, 'sbx');
+R = 7;      % run containing the volume
+I = 512;    % rows
+J = 786;    % columns
+P = 31;     % planes in the volume
+V = 100;    % volumes taken in run R
+pathvolumes = ['\\anastasia\data\2p\kelly\cross_day_volumes\' mouse '_' date '_00' num2str(R)];
 volumes = sbxReadPMT(pathvolumes); % green channel by default
-volumes = reshape(volumes, [512, 786, 31, 100]);
+volumes = reshape(volumes, [I, J, P, V]);
+
+
+%% Define reference volume and edges
+refvol = DefineReference(volumes, V);
+edges = [10, 10, 60, 60]; % top, bottom, left, right
+
 
 %% Plane
 
-run = 6;
-plane = sbxReadPMT(sbxPath(mouse, date, run, 'sbx'));
-% sbxReadPMT(sbxpath, startframe (default 0), nbframes (default Nb frames))
+corr_byrun = zeros(R,P);
+for r = 1:R-1
+    plane = sbxReadPMT(sbxPath(mouse, date, r, 'sbx', 'server', 'beastmode'), 1, 1000);
+    meanplane = mean(plane,3);
+    [~, corr_byrun(r,:)] = SpatialCorrPlaneVolume(refvol(:,:,:), meanplane, edges);
+end
 
-%% Save tif to visualise volume
+corr_byrun  = zscore(corr_byrun');
+corr_byrun(:,R) = mean(corr_byrun(:,1:R-1),2);
+[~, closestplane] = max(corr_byrun(:,R));
 
-% saveVolumeRegistration('E:\hanae_data\', volumes, 'volumes',...
-%     mouse, date, runvolume, 0, 'type', 'tif');
+figure;
+hold on;
+for r = 1:R-1
+    plot(corr_byrun(:,r),'color','b','linewidth',0.7);
+end
+plot(corr_byrun(:,R),'color','b','linewidth',2);
+hold off;
 
-%% Define reference volume and edges after visualizing the data
+%% red channel
 
-n = 100; % bin size
-refvol = DefineReference(volumes, n);
-edges = [10, 10, 60, 60]; % top, bottom, left, right
+volumesred = sbxReadPMT(pathvolumes, 0, P*V, 1); % red channel
+volumesred = reshape(volumesred, [I, J, P, V]);
+refvolred = DefineReference(volumesred, V);
+figure; imshow(mat2gray(mean(refvolred(edges(1):end-edges(2),edges(3):end-edges(4),:),3)));
 
-%% Find closest plane and display spatial correlations
-
-meanplane = mean(plane,3);
-[closestplane, corr] = SpatialCorrPlaneVolume(refvol, meanplane, edges);
-plot(corr);
-
-
+redplane = mean(refvolred(:,:,closestplane-2:closestplane+2),3);
+figure; imshow(mat2gray(refvolred(edges(1):end-edges(2),edges(3):end-edges(4),closestplane)));
 

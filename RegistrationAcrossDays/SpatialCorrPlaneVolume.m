@@ -42,6 +42,18 @@ function [closestplane, corrvector] = SpatialCorrPlaneVolume(...
     end    
     [~,J] = max(corrvector); % get index max correlation
     closestplane = J; % get the closestplane
+    if  (J-5 > 0) & (J+5 <= size(corrvector,2))
+        idx = 4;
+    else
+        idx = (min([length(corrvector)-J, J-1]));
+    end
+    % Perform interpolation
+    x = J-idx:0.01:J+idx;
+    FitOrder = idx;
+    P = polyfit(J-idx:J+idx, corrvector(J-idx:J+idx),FitOrder);
+    CorrelationFit = polyval(P, x);
+    [~,I] = max(CorrelationFit); % max of the interpolating curve
+    disp(x(I));
 
     tEndCZPV = toc(tStartCZPV);
     fprintf('ComputeZshiftPlaneVolume in %d minutes and %f seconds\n.', ...
