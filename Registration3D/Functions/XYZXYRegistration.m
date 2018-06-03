@@ -1,124 +1,162 @@
-function [volumereg3, savingpath] = XYZXYRegistration(inputsbxpaths, ...
-    mouse, date, runs, channel,...
-    n, BlurFactor, KeepingFactor, PlanesCorr, ...
-    savingpathbegin, nbchunck)
+function [datareg3, savingpathbegin] = XYZXYRegistration(inputsbxpath, ...
+    mouse, date, run, channel, n, blurfactor, keepingfactor,...
+    edges, planescorr, nbchunck, sizedata, varargin)
 
-idx = 1;
-for run = runs
-    tStart = tic;
+tStartXYZXYR = tic;
+
+p = inputParser;
+    addOptional(p, 'server', 'megatron');
+    addOptional(p, 'savingpathbegin', []);
+    if length(varargin) == 1 && iscell(varargin{1}), varargin = varargin{1}; end
+    parse(p, varargin{:});
+    p = p.Results;
+
+if  isempty(p.savingpathbegin)
+    p.savingpathbegin = ...
+        '\\megatron\E:\hanae_data\Microglia\registrationFiles\';
     strdate = regexprep(datestr(datetime('now')), ' ', '_');
     strdate = regexprep(strdate, ':', '-');
-savingpath = strcat(savingpathbegin, '\', strdate, '\');
-mkdir(savingpath)
-savingpath = strcat(savingpath, mouse, '_', date, '_',...
-    num2str(run), '\');
-mkdir(savingpath);
+    p.savingpathbegin = strcat(p.savingpathbegin, '\', strdate, '\');
+    mkdir(p.savingpathbegin);
+end
+
+savingpath = strcat(p.savingpathbegin, mouse, '_', date, '_',...
+    num2str(run), '_', num2str(channel),'\');
+if ~exist(savingpath, 'dir')
+    mkdir(savingpath);
+end
+
+savingpathbegin = p.savingpathbegin;
 
 % load data
-% inputsbxpath = sbxPath(mouse, date, run, 'sbx');
-info = sbxInfo(inputsbxpaths(idx,:));
-% w = info.sz(1); h = info.sz(2);
-% zp = length(info.otwave);
-% ts = (info.max_idx+1)/(length(info.otwave));
-zp = 115; ts = 200;
-volume = sbxReadPMT(inputsbxpaths(idx,:), 0, 30000, channel);
-idx = idx + 1;
-w = size(volume, 1); h = size(volume, 2);
-nbframes = size(volume,3);
-volume = reshape(volume, [w, h, zp, ts]);
+zp = sizedata(3);
+ts = sizedata(4);
+data = sbxReadPMT(inputsbxpath, 0, zp*ts, channel);
+w = size(data, 1); h = size(data, 2); nbframes = size(data,3);
+data = reshape(data, [w, h, zp, ts]);
 % crop or ds
-%volume = volume(1:2:end,1:2:end,:,:);
-[w, h, zp, ts] = size(volume);
+data = data(edges(3)+1:end-edges(4),edges(1)+1:end-edges(2),:,:);
 
 % errors
 if mod(nbframes, nbchunck) ~= 0
     error(strcat('number of chuncks for WriteTiff should divide ',...
         'the number of frames'));
 elseif mod(ts, n) ~= 0
-    error(strcat("Chunck size for reference should be", ...
-        "a divider of the number of frames"));
+    error(strcat('Chunck size for reference should be', ...
+        'a divider of the number of frames'));
+elseif zp*ts ~= nbframes
+    error(strcat('number of volumes smaller than expected'));
 end
 
-saveVolumeRegistration(savingpath, volume, 'volume', mouse, ...
-    date, run, nbchunck);
 
 % REFERENCE 1: define, register and save reference 1
-disp("reference 1");
-ref1 = DefineReference(volume, n); 
-[Ref1RowShifts,Ref1ColumnShifts] = DetermineXYShifts(ref1(:,:,:,:),...
-    BlurFactor,KeepingFactor,ref1(:,:,:,1));
+disp('reference 1');
+ref1 = DefineReference(data, n); 
+[Ref1RowShifts,Ref1ColumnShifts] = DetermineXYShifts(ref1,...
+    blurfactor,keepingfactor,ref1(:,:,:,1));
 [ref1reg] = ApplyXYShifts(ref1, Ref1RowShifts, Ref1ColumnShifts);
-clear ref1;
-saveVolumeRegistration(savingpath, ref1reg, 'ref1reg', mouse, date, run, nbchunck);
+clear ref1; clear Ref1RowShifts; clear Ref1ColumnShifts;
 
 % VOLUMEREG1: XY registration and save 1st registration
-disp("volumereg1");
-[RowShiftsXY, ColumnShiftsXY] = DetermineXYShifts(volume,...
-    BlurFactor,KeepingFactor,ref1reg);
+disp('datareg1');
+[RowShiftsXY1, ColumnShiftsXY1] = DetermineXYShifts(data,...
+    blurfactor,keepingfactor,ref1reg);
+% pad images with zeros to recover image size
+ref1reg = padarray(ref1reg, [edges(3), edges(1)], 'pre');
+ref1reg = padarray(ref1reg, [edges(4), edges(2)], 'post');
+mkdir(strcat(savingpath, 'ref1reg\'));
+saveVolumeRegistration(savingpath, ref1reg, 'ref1reg',...
+    mouse, date, run, channel, 1, 'type', 'sbx', 'server', p.server);
 clear ref1reg;
-[volumereg1] = ApplyXYShifts(volume, RowShiftsXY, ColumnShiftsXY);
-saveVolumeRegistration(savingpath, volumereg1, 'volumereg1', ...
-    mouse, date, run, nbchunck);
-mkdir(strcat(savingpath, 'ShiftsRow\'));
-mkdir(strcat(savingpath, 'ShiftsColumn\'));
-save(strcat(savingpath, 'ShiftsRow\RowShiftsXY1'), 'RowShiftsXY');
+[datareg1] = ApplyXYShifts(data, RowShiftsXY1, ColumnShiftsXY1);
+if ~exist(strcat(savingpath, 'ShiftsRow\'), 'dir')
+    mkdir(strcat(savingpath, 'ShiftsRow\'));
+end
+if ~exist(strcat(savingpath, 'ShiftsColumn\'), 'dir')
+    mkdir(strcat(savingpath, 'ShiftsColumn\'));
+end
+save(strcat(savingpath, 'ShiftsRow\RowShiftsXY1'), 'RowShiftsXY1');
 save(strcat(savingpath, 'ShiftsColumn\ColumnShiftsXY1'), ...
-    'ColumnShiftsXY');
-clear volume; % clear variables to free space
+    'ColumnShiftsXY1');
+% pad images with zeros to recover image size
+data = padarray(data, [edges(3), edges(1)], 'pre');
+data = padarray(data, [edges(4), edges(2)], 'post');
+mkdir(strcat(savingpath, 'data\'));
+saveVolumeRegistration(savingpath, data, 'data', mouse, ...
+    date, run, channel, 1, 'type', 'sbx', 'server', p.server);
+clear data; clear RowShiftsXY1; clear ColumnShiftsXY1; 
 
 % REFERENCE 2
-disp("reference 2");
-ref2 = DefineReference(volumereg1, n);
+disp('reference 2');
+ref2 = DefineReference(datareg1, n);
 [Ref2RowShifts,Ref2ColumnShifts] = DetermineXYShifts(ref2(:,:,:,:),...
-    BlurFactor,KeepingFactor,ref2(:,:,:,1));
+    blurfactor,keepingfactor,ref2(:,:,:,1));
 [ref2reg] = ApplyXYShifts(ref2, Ref2RowShifts, Ref2ColumnShifts);
-saveVolumeRegistration(savingpath, ref2reg, 'ref2reg', mouse, date, run, nbchunck);
-clear ref2;
+clear ref2; clear Ref1RowShifts; clear Ref1ColumnShifts;
 
 % REGISTRATION 2: Z registration with interpolation
-disp("volumereg2");
-  [RowShifts,ColumnShifts,ZShifts] = ComputeZshiftInterpolate(...
-      ref2reg, volumereg1, PlanesCorr, [120,200,20,20]);%[60,100,10,10]);
-%[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
- %   ref2reg, volumereg1, PlanesCorr);
- clear ref2reg;
-  save(strcat(savingpath, 'ShiftsRow\RowShiftsZ'), 'RowShifts');
-save(strcat(savingpath, 'ShiftsColumn\ColumnShiftsZ'), 'ColumnShifts');
+disp('datareg2');
+[RowShiftsZ,ColumnShiftsZ,ZShifts] = ComputeZshiftInterpolate(...
+  ref2reg, datareg1, planescorr, edges(1:4));
+ref2reg = padarray(ref2reg, [edges(3), edges(1)], 'pre');
+ref2reg = padarray(ref2reg, [edges(4), edges(2)], 'post');
+mkdir(strcat(savingpath, 'ref2reg\'));
+saveVolumeRegistration(savingpath, ref2reg, 'ref2reg',...
+  mouse, date, run, channel, 1, 'type', 'sbx', 'server', p.server);
+clear ref2reg;
+save(strcat(savingpath, 'ShiftsRow\RowShiftsZ'), 'RowShiftsZ');
+save(strcat(savingpath, 'ShiftsColumn\ColumnShiftsZ'), 'ColumnShiftsZ');
 mkdir(strcat(savingpath, 'ShiftsZ\'));
 save(strcat(savingpath, 'ShiftsZ\ZShifts'), 'ZShifts');
-   [volumereg2] = ApplyZShiftInterpolate(volumereg1, ZShifts, ...
-      ColumnShifts, RowShifts);
-%[volumereg2] = ApplyXYZShifts(volumereg1, ZShifts, ...
- %  ColumnShifts, RowShifts);
-saveVolumeRegistration(savingpath, volumereg2, 'volumereg2', ...
-    mouse, date, run, nbchunck);
-clear volumereg1;
+[datareg2] = ApplyZShiftInterpolate(datareg1, ZShifts, ...
+  ColumnShiftsZ, RowShiftsZ);
+datareg1 = padarray(datareg1, [edges(3), edges(1)], 'pre');
+datareg1 = padarray(datareg1, [edges(4), edges(2)], 'post');
+mkdir(strcat(savingpath, 'datareg1\'));
+saveVolumeRegistration(savingpath, datareg1, 'datareg1', ...
+    mouse, date, run, channel, 1, 'type', 'sbx', 'server', p.server);
+clear datareg1; clear RowShiftsZ; clear ColumnShiftsZ; clear ZShifts;
 
 % REFERENCE 3
-disp("reference 3");
-ref3 = DefineReference(volumereg2, n);
+disp('reference 3');
+ref3 = DefineReference(datareg2, n);
 [Ref3RowShifts,Ref3ColumnShifts] = DetermineXYShifts(ref3(:,:,:,:),...
-    BlurFactor,KeepingFactor,ref3(:,:,:,1));
+    blurfactor,keepingfactor,ref3(:,:,:,1));
 [ref3reg] = ApplyXYShifts(ref3, Ref3RowShifts, Ref3ColumnShifts);
-saveVolumeRegistration(savingpath, ref3reg, 'ref3reg', mouse, date, run, nbchunck);
-clear ref3;
+clear ref3; clear Ref3RowShifts; clear Ref3ColumnShifts;
 
 % REGISTRATION 3
-disp("volumereg3");
-[RowShiftsXY2, ColumnShiftsXY2] = DetermineXYShifts(volumereg2,...
-    BlurFactor,KeepingFactor,ref3reg);
+disp('datareg3');
+datareg2 = uint16(datareg2);
+[RowShiftsXY2, ColumnShiftsXY2] = DetermineXYShifts(datareg2,...
+    blurfactor, keepingfactor, ref3reg);
+ref3reg = padarray(ref3reg, [edges(3), edges(1)], 'pre');
+ref3reg = padarray(ref3reg, [edges(4), edges(2)], 'post');
+mkdir(strcat(savingpath, 'ref3reg\'));
+saveVolumeRegistration(savingpath, ref3reg, 'ref3reg', ...
+    mouse, date, run, channel, 1, 'type', 'sbx', 'server', p.server);
 clear ref3reg;
-[volumereg3] = ApplyXYShifts(volumereg2, RowShiftsXY2, ...
+[datareg3] = ApplyXYShifts(datareg2, RowShiftsXY2, ...
     ColumnShiftsXY2);
-saveVolumeRegistration(savingpath, volumereg3, 'volumereg3',...
-    mouse, date, run, nbchunck);
+datareg3 = uint16(datareg3);
 save(strcat(savingpath, 'ShiftsRow\RowShiftsXY2'), 'RowShiftsXY2');
 save(strcat(savingpath, 'ShiftsColumn\ColumnShiftsXY2'), ...
     'ColumnShiftsXY2');
-clear volumereg2;
+datareg2 = padarray(datareg2, [edges(3), edges(1)], 'pre');
+datareg2 = padarray(datareg2, [edges(4), edges(2)], 'post');
+mkdir(strcat(savingpath, 'datareg2\'));
+saveVolumeRegistration(savingpath, datareg2, 'datareg2', ...
+    mouse, date, run, channel, 1, 'type', 'sbx', 'server', p.server);
+clear datareg2; clear RowShiftsXY2; clear ColumnShiftsXY2;
 
-tEnd = toc;
-fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
-    floor(tEnd-tStart/60),rem(tEnd-tStart,60));
-end
+datareg3 = padarray(datareg3, [edges(3), edges(1)], 'pre');
+datareg3 = padarray(datareg3, [edges(4), edges(2)], 'post');
+mkdir(strcat(savingpath, 'datareg3\'));
+saveVolumeRegistration(savingpath, datareg3, 'datareg3',...
+    mouse, date, run, channel, 1, 'type', 'sbx', 'server', p.server);
+
+tEndXYZXY = toc(tStartXYZXYR);
+fprintf('XYZXYRegistration in %d minute(s) and %f seconds\n.', ...
+    floor(tEndXYZXY/60),rem(tEndXYZXY,60));
+
 end
