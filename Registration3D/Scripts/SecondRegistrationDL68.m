@@ -52,7 +52,7 @@ zp = size(volume, 3);
 ts = size(volume, 4);
 n = 30; % chunck size
 if mod(ts, n) ~= 0
-    disp("Chunck size should be a divider of the number of frames");
+    disp('Chunck size should be a divider of the number of frames');
 end
 
 BlurFactor = 1;
