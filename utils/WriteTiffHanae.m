@@ -1,10 +1,14 @@
-function WriteTiffHanae(OutputFolder, Matrix, Title, ChunckSize)
-% Write Tiff stacks
-% OutputFolder: string, output folder to create and where the Tiff file(s)
-% will be saved
-% Matrix: 3D (x,y,z or t) or 4D matrix, (x,y,z,t) to save as a Tiff
+function [] = WriteTiffHanae(OutputFolder, Matrix, Title, ChunckSize)
+% WriteTiffHanae: write matlab 3D or 4D matrix as a tiff multipage 
+% 
+%     Inputs:
+%         OutputFolder -- string, output folder to create and
+%             where the Tiff file(s) will be saved
+%          Matrix -- 3D (x,y,z or t) or 4D matrix, (x,y,z,t) to save
+%            Title -- string, title
+%            Chuncksize -- int, size of the chuncks
 
-tic;
+tStartWTH = tic;
 
 % creating new folder
 mkdir(OutputFolder);
@@ -43,8 +47,8 @@ for chunck = 1:NbChunck
     writeTiff(Matrix(:, :,begin:begin+ChunckSize-1),outputFileName);
 end
 
-tEnd = toc;
-fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
-    floor(tEnd/60),rem(tEnd,60));
+tEndWTH = toc(tStartWTH);
+fprintf('WriteTiffHanae in %d minutes and %f seconds\n.', ...
+    floor(tEndWTH/60),rem(tEndWTH,60));
 
 end

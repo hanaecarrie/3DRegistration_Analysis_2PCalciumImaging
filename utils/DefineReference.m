@@ -16,7 +16,7 @@ z = size(volume, 3);
 t = size(volume, 4);
 
 if mod(t,n) ~= 0
-    error("n doesn't divide the number of frames")
+    error('n does not divide the number of frames')
 end
 
 ref = zeros(x, y, z, t/n); % initialize reference

@@ -1,35 +1,57 @@
-function [] = saveSBXfilesPerPlane(sbxpath, mouse, date, run, volumereg3, extension, ...
-    pathbegin)
+function [] = saveSBXfilesPerPlane(mouse, date, run, channel,...
+    volumereg3, extension, pathsbx, varargin)
 % savesbxfiles
 
-% sbxpath = sbxPath(mouse, date, run, 'sbx');
-info = sbxInfo(sbxpath);
+p = inputParser;
+    addOptional(p, 'pathbegin', '');
+    addOptional(p, 'savingstructure', 'onscanbox'); % can be 'onstorage' or 'onscanbox'
+    addOptional(p, 'server', 'megatron');
+    if length(varargin) == 1 && iscell(varargin{1})
+        varargin = varargin{1};
+    end
+parse(p, varargin{:});
+p = p.Results;
+
+sizedata = size(volumereg3);
+
+info = sbxInfo(pathsbx);
+info.scanmode = 1;
 info.otparam(3) = 1;
-info.sz(1) = size(volumereg3, 1);
-info.sz(2) = size(volumereg3, 2);
-zp = length(info.otwave);
-ts = (info.max_idx+1)/(length(info.otwave));
+info.nchan = 1;
+info.sz(1) = sizedata(1);
+info.sz(2) = sizedata(2);
+zp = sizedata(3);
+ts = sizedata(4);
 info.max_idx = ts-1;
 info.nsamples = ts;
 otwave = info.otwave;
-if nargin < 6
-path_begin = strcat( 'D:\twophoton_data\2photon\scan\', mouse, ...
+if p.savingstructure == 'onscanbox'
+    path_begin = strcat(sbxScanbase(p.server), mouse, ...
     '\', date, '_', mouse, '\', date, '_', mouse, '_run');
-else
-    path_begin = strcat(pathbegin, 'affineplanes\', date, '_', mouse, '_run');
-    
+elseif p.savingstructure == 'onstorage'
+    path_begin = strcat(p.pathbegin,'\', mouse, '_', date, '_',...
+        num2str(run), '_', num2str(channel), '\affineplanes\', ...
+        date, '_', mouse, '_run');
 end
 
 for plane = 1:zp
-    info.otwave = otwave(plane);
+    try
+            info.otwave = otwave(plane);
+    catch
+            info.otwave = 1;
+    end
     nbrun = run*extension + (plane);
-    newfolder = strcat(path_begin, num2str(nbrun));
-    mkdir(newfolder);
+    newfolder = strcat(path_begin, num2str(nbrun), '\');
+    if ~exist(newfolder, 'dir')
+        mkdir(newfolder);
+    end
     savepathp = strcat(newfolder, '\', mouse, '_', date,...
-    '_', num2str(nbrun-1), '.sbx');
-    seq = volumereg3(:,:,plane, :);
-    seq = squeeze(seq);
-    sbxWrite(savepathp, seq, info);
+    '_', num2str(nbrun-1),'.sbx');
+    if ~exist(savepathp, 'file')
+        seq = volumereg3(:,:,plane, :);
+        seq = squeeze(seq);
+        sbxWrite(savepathp, seq, info);
+    end
 end
 
 end
