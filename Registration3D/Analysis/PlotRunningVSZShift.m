@@ -9,16 +9,16 @@ startup;
 %%
 
 % Choose datafile
-mouse = 'DL68'; 
-date = '170523';
+mouse = 'DL89'; 
+date = '171122';
 
 Running = [];
-for nbrun = 1:4
+for nbrun = 1:6
 
 % See running state of the mouse
 running = sbxSpeed(mouse, date, nbrun);
 
-n = 15; % average every n values
+n = 30; % average every n values
 a = reshape(running,[],1); % arbitrary data
 avgrun = arrayfun(@(i) mean(a(i:i+n-1)),1:n:length(a)-n+1)';
 Running = cat(1,Running, avgrun);

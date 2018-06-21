@@ -21,6 +21,9 @@ for frame = 1:t
      end
 
 end
+
+if t > 1
     Edges = max(Edges);
+end
 
 end
