@@ -1,7 +1,7 @@
 function [] = RegistrationMicroglia(mouse, date, runs, refchannel, ...
     edges, blurfactor, keepingfactor, n, planescorr,...
     nbchunck, m1, varargin)
-% REGISTRATIONMICROGLIA: performs registration of microglia movies
+%   REGISTRATIONMICROGLIA: performs registration of microglia movies
 
 %   Inputs:
 %     mouse -- str, mouse name
