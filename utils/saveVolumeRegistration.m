@@ -30,12 +30,13 @@ if strcmp(p.type,'sbx') && ~exist(savingpathv, 'dir')
 end
 if strcmp(p.type,'sbx') || strcmp(p.type,'both')
     sbxpath = sbxPath(mouse, date, run, 'sbx', 'server', p.server);
-    info = sbxInfo(sbxpath);
-    info.recordsPerBuffer = w;
-    info.nchan = 1;
+    info2 = sbxInfo(sbxpath);
+    info2.recordsPerBuffer = w;
+    info2.scanmode = 1;
+    info2.nchan = 1;
     sbxWrite(strcat(savingpathv, mouse,'_', date,'_', ...
         num2str(run),'_', num2str(channel),'_', namefile),...
-        reshape(volume, [w,h,zp*ts]), info);
+        reshape(volume, [w,h,zp*ts]), info2);
 end
 
 tEndsVR = toc(tStartsVR);

@@ -6,7 +6,7 @@ p = inputParser;
     addOptional(p, 'structure', 'onscanbox'); % can be 'onstorage' or 'onscanbox'
     addOptional(p, 'server', 'megatron');
     addOptional(p, 'pathbeginread', '');
-    addOptional(p, 'pathbeginwrite', 'E:\hanae_data\Microglia\'),
+    addOptional(p, 'pathbeginwrite', 'E:\hanae_data\Microglia\');
     if length(varargin) == 1 && iscell(varargin{1})
         varargin = varargin{1};
     end
