@@ -30,6 +30,7 @@ p = p.Results;
 
 sizedata = size(volumereg3);
 
+% info file to extract from initial file and to modify
 info = sbxInfo(pathsbx);
 info.scanmode = 1;
 info.otparam(3) = 1;
@@ -40,6 +41,8 @@ zp = sizedata(3);
 ts = sizedata(4);
 info.max_idx = ts-1;
 info.nsamples = ts;
+
+% set paths and otwave
 otwave = info.otwave;
 if p.savingstructure == 'onscanbox'
     path_begin = strcat(sbxScanbase(p.server), mouse, ...
@@ -50,20 +53,25 @@ elseif p.savingstructure == 'onstorage'
         date, '_', mouse, '_run');
 end
 
+% write and save planes individually
 for plane = 1:zp
     try
             info.otwave = otwave(plane);
     catch
-            info.otwave = 1;
+            info.otwave = 1; % create a fake otwave if otwave is empty
+            % in the original file
     end
+
     nbrun = run*extension + (plane);
     newfolder = strcat(path_begin, num2str(nbrun), '\');
-    if ~exist(newfolder, 'dir')
+    if ~exist(newfolder, 'dir') % create folder if doesn't exist
         mkdir(newfolder);
     end
+
     savepathp = strcat(newfolder, '\', mouse, '_', date,...
-    '_', num2str(nbrun-1),'.sbx');
-    if ~exist(savepathp, 'file')
+    '_', num2str(nbrun-1),'.sbx'); % save path
+
+    if ~exist(savepathp, 'file') % write sbx file if doesn't exist
         seq = volumereg3(:,:,plane, :);
         seq = squeeze(seq);
         sbxWrite(savepathp, seq, info);

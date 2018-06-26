@@ -15,7 +15,7 @@ y = size(volume, 2);
 z = size(volume, 3);
 t = size(volume, 4);
 
-if mod(t,n) ~= 0
+if mod(t,n) ~= 0 % raise error, we need t/n to be an integer
     error('n does not divide the number of frames')
 end
 

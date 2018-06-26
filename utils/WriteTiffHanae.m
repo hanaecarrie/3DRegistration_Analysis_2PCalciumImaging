@@ -20,12 +20,14 @@ if A == 4
     Matrix = reshape(Matrix, [Size(1), Size(2), Size(3)*Size(4)]);
 end
 SS = size(Matrix,3);
+
 % default input
 if nargin <= 3
     ChunckSize = SS;
 elseif nargin < 3
     Title = 'Movie';
 end
+
 NbChunck = ceil(SS/ChunckSize);
 
 % Raising possible erros
@@ -44,8 +46,7 @@ for chunck = 1:NbChunck
     else
         extension =  strcat('_chunck_', num2str(chunck));
     end
-    outputFileName = strcat(OutputFolder, Title, ...
-           extension, '.tiff');
+    outputFileName = strcat(OutputFolder, Title, extension, '.tiff');
     begin = (chunck-1)*ChunckSize +1;
     writeTiff(Matrix(:, :,begin:begin+ChunckSize-1),outputFileName);
 end

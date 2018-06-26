@@ -23,14 +23,10 @@ p = p.Results;
 % load planes and concatenate them on the 4th dimension
 volume = [];
 for i = planeruns
-    pathplane = strcat(...
-        pathbegin, mouse, '\', date, ...
-        '_', mouse, '\', date, '_', mouse, '_run',...
-        num2str(i), '\', mouse, '_', date, '_',...
-        num2str(i-1), '_', type);
+    pathplane = sbxPath(mouse, date, i, type, 'server', p.server);
     plane = sbxReadPMT(pathplane);
     volume = cat(4, volume, plane);
 end
-volume = permute(volume, [1,2,4,3]);
+volume = permute(volume, [1,2,4,3]); % permute t and z to get x,y,z,t
 
 end
