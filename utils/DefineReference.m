@@ -1,14 +1,14 @@
 function [ref] = DefineReference(volume, n)
-% DefineReference
-% build a moving volume reference from an input sequence of volume
-% Inputs:
-%   volume - input the volume, 4D matrix of double, dim = x,y,z,t
-%   n - number of frames to average together for the moving reference
+%   DEFINEREFERENCE: build a moving volume reference from an input
+%       sequence of volume
+
+%   Inputs:
+%     volume - input the volume, 4D matrix of double, dim = x,y,z,t
+%     n - number of frames to average together for the moving reference
 %       ADVICE: visualise your volume in ImageJ and bin each n frames
 %       to find a good n
-% Outputs:
-%   ref - moving volume reference, 4D matrix of double, dim = x,y,z,t/n
-
+%   Outputs:
+%     ref - moving volume reference, 4D matrix of double, dim = x,y,z,t/n
 
 x = size(volume, 1);
 y = size(volume, 2);

@@ -1,6 +1,20 @@
 function [] = saveVolumeRegistration(savingpath, volume, namefile,...
     mouse, date, run, channel, varargin)
 
+%   SAVEVOLUMEREGISTRATION: save each plane of the 4D volume as
+%       fake runs with a sbx file per plane
+
+%   Inputs:
+%     savingpath -- str, path to folder where to save the data 
+%     volume -- input volume to save, 4D matrix of double, dim = x,y,z,t
+%     namefile -- str, 
+%     mouse -- str, mouse name
+%     date -- str, imaging session date
+%     run -- int, run number
+%     channel -- 0 for green or 1 for red, channel number
+%   Outputs:
+%     none
+
 p = inputParser;
     addOptional(p, 'server', 'megatron');
     addOptional(p, 'type', 'both');

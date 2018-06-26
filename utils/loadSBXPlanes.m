@@ -1,9 +1,15 @@
 function [volume] = loadSBXPlanes(mouse, date, planeruns, type, pathbegin)
 
-volume = [];
-if nargin < 5
-    pathbegin = 'D:\twophoton_data\2photon\scan\';
-end
+%   LOADSBXPLANES: load planes saved as individual runs in the scanbox of a
+%   given server. The type (sbx, sbxreg, ...) can be precised
+
+%   Inputs:
+%     mouse -- str, mouse name
+%     date -- str, imaging session date
+%     planeruns -- list of int, numbers of fake runs which stand for
+%          individual planes
+%   Outputs:
+%     volume - the output volume, 4D matrix of double, dim = x,y,z,t
 
 for i = planeruns
     pathplane = strcat(...
