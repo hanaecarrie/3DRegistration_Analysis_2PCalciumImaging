@@ -5,8 +5,8 @@ function[correctedVolume] = ApplyXYShifts(correctedVolume,...
 
 %   Inputs:
 %     correctedVolume -- 4D matrix of uint16 or other, dim (x,y,z,t)
-%     RowShifts -- 2D matrix of doubles, dim 
-%     ColumnShifts -- 2D matrix of doubles, dim 
+%     RowShifts -- 2D matrix of doubles, dim (z,t)
+%     ColumnShifts -- 2D matrix of doubles, dim (z,t)
 %   Outputs:
 %     correctedVolume -- 4D matrix of uint16 or other, dim (x,y,z,t)
 
@@ -21,6 +21,7 @@ function[correctedVolume] = ApplyXYShifts(correctedVolume,...
                 [ColumnShifts(i,t) RowShifts(i,t)]); % careful order!
         end
     end
+
     tEndAXYS = toc(tStartAXYS);
     fprintf('ApplyXYShifts in %d minutes and %f seconds\n.', ...
         floor(tEndAXYS/60),rem(tEndAXYS,60));

@@ -1,10 +1,22 @@
-function[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
+function [RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
     ReferenceVolumes, Volume, WidthCorr)
-    tic
+
+%   COMPUTEZSHIFT: calculate Z shifts
+
+%   Inputs:
+%     referenceVolumes -- 4D matrix of uint16 or other, dim (x,y,z/n,t)
+%     Volume -- 2D matrix of doubles, dim (z,t)
+%     WidthCorr -- 2D matrix of doubles, dim (z,t)
+%   Outputs:
+%     ZShifts -- 2D matrix of doubles, dim (z,t)
+%     ColumnShifts -- 2D matrix of doubles, dim (z,t)
+%     RowShifts -- 2D matrix of doubles, dim (z,t)
+
+    tStartCZ = tic;
     Size = size(Volume);
     chunck = floor(Size(4)/size(ReferenceVolumes, 4));
     
-    for t=1:Size(4)
+    for t = 1:Size(4)
         reft = ReferenceVolumes(:,:,:,ceil(t/chunck));
         Correlations = ones(Size(3)-2*WidthCorr,2*WidthCorr+1)*NaN;
         for j = WidthCorr+1:Size(3)-WidthCorr % considered plane
@@ -41,7 +53,8 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
         ColumnShifts(:,t) = ones(Size(3),1)*column_shift;
         ZShifts(t) = -((I-1)*0.01+J-4-WidthCorr-1);
     end
-    tEnd = toc;
-    fprintf('Elapsed time is %d minutes and %f seconds\n', ...
-        floor(tEnd/60),rem(tEnd,60));
+
+    tEndCZ = toc(tStartCZ);
+    fprintf('ComputeZshift in %d minutes and %f seconds\n.', ...
+        floor(tEndCZ/60),rem(tEndCZ,60));
 end
