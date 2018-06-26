@@ -45,10 +45,10 @@ vol_rb_b(:,1:edge,:,:) = 0; % replace stipes by zeros
 
 %% save volumes as tiff to visualise them in ImageJ
 % 
-% WriteTiffHanae('E:\hanae_data\', vol_rg_r, 'vol_rg_r', sizevol(3)*sizevol(4));
-% WriteTiffHanae('E:\hanae_data\', vol_rg_g, 'vol_rg_g', sizevol(3)*sizevol(4));
-% WriteTiffHanae('E:\hanae_data\', vol_rb_r, 'vol_rb_r', sizevol(3)*sizevol(4));
-% WriteTiffHanae('E:\hanae_data\', vol_rb_b, 'vol_rb_b', sizevol(3)*sizevol(4));
+% writeTiffHanae('E:\hanae_data\', vol_rg_r, 'vol_rg_r', sizevol(3)*sizevol(4));
+% writeTiffHanae('E:\hanae_data\', vol_rg_g, 'vol_rg_g', sizevol(3)*sizevol(4));
+% writeTiffHanae('E:\hanae_data\', vol_rb_r, 'vol_rb_r', sizevol(3)*sizevol(4));
+% writeTiffHanae('E:\hanae_data\', vol_rb_b, 'vol_rb_b', sizevol(3)*sizevol(4));
 
 %% 1st step: Registration of both volumes of both channels - version for Kelly
 

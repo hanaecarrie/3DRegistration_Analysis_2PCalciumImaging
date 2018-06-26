@@ -1,4 +1,4 @@
-function [] = WriteTiffHanae(OutputFolder, Matrix, Title, ChunckSize)
+function [] = writeTiffHanae(OutputFolder, Matrix, Title, ChunckSize)
 
 %    WRITETIFFHANAE: write matlab 3D or 4D matrix as a tiff multipage 
 % 
