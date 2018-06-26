@@ -20,3 +20,12 @@ sccprj/
 
 # sbxFunctionsArthur
 sbxFunctionsArthur/
+
+# OSX / *nix default autosave extension
+*.m~
+
+# DSstore files
+*.DS_Store
+
+# Octave session info
+octave-workspace
