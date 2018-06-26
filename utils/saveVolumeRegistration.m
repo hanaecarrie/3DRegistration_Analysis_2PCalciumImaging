@@ -16,12 +16,15 @@ function [] = saveVolumeRegistration(savingpath, volume, namefile,...
 %     none
 
 p = inputParser;
-    addOptional(p, 'server', 'megatron');
-    addOptional(p, 'type', 'both');
-    addOptional(p, 'nbchuncktiff', 1);
-    if length(varargin) == 1 && iscell(varargin{1}), varargin = varargin{1}; end
-    parse(p, varargin{:});
-    p = p.Results;
+    addOptional(p, 'server', 'megatron'); % default server
+    addOptional(p, 'type', 'both'); % type = 'both', 'tif' or sbx'
+    addOptional(p, 'nbchuncktiff', 1); % default number of chuncks 
+    % for the file file
+    if length(varargin) == 1 && iscell(varargin{1})
+        varargin = varargin{1};
+    end
+parse(p, varargin{:});
+p = p.Results;
 
  tStartsVR = tic;
  

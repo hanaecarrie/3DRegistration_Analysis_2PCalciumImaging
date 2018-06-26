@@ -1,10 +1,26 @@
 function [] = saveSBXfilesPerPlane(mouse, date, run, channel,...
     volumereg3, extension, pathsbx, varargin)
-% savesbxfiles
+
+%   SAVESBXFILESPERPLANE: save each plane of the 4D volume as
+%       fake runs with a sbx file per plane
+
+%   Inputs:
+%     mouse -- str, mouse name
+%     date -- str, imaging session date
+%     run -- int, run number
+%     channel -- 0 for green or 1 for red, channel number
+%     volumereg3 -- the input volume to be splitted into individual 
+%       planes, 4D matrix of double, dim = x,y,z,t
+%     extension -- int, extension to add when saving the sbx files 
+%       per plane, new run = (oldrun*m1) + planenumber
+%     pathsbx -- sbx path to pull the info file from
+%   Outputs:
+%     none
 
 p = inputParser;
     addOptional(p, 'pathbegin', '');
-    addOptional(p, 'savingstructure', 'onscanbox'); % can be 'onstorage' or 'onscanbox'
+    addOptional(p, 'savingstructure', 'onscanbox');
+    % can be 'onstorage' or 'onscanbox'
     addOptional(p, 'server', 'megatron');
     if length(varargin) == 1 && iscell(varargin{1})
         varargin = varargin{1};

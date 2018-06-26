@@ -1,4 +1,4 @@
-function [volume] = loadSBXPlanes(mouse, date, planeruns, type, pathbegin)
+function [volume] = loadSBXPlanes(mouse, date, planeruns, varargin)
 
 %   LOADSBXPLANES: load planes saved as individual runs in the scanbox of a
 %   given server. The type (sbx, sbxreg, ...) can be precised
@@ -11,6 +11,17 @@ function [volume] = loadSBXPlanes(mouse, date, planeruns, type, pathbegin)
 %   Outputs:
 %     volume - the output volume, 4D matrix of double, dim = x,y,z,t
 
+ p = inputParser;
+    addOptional(p, 'type', 'sbx'); % type of file (sbxreg, sbx, ...)
+    addOptional(p, 'server', 'megatron');  % default server
+    if length(varargin) == 1 && iscell(varargin{1})
+        varargin = varargin{1};
+    end
+parse(p, varargin{:});
+p = p.Results;
+
+% load planes and concatenate them on the 4th dimension
+volume = [];
 for i = planeruns
     pathplane = strcat(...
         pathbegin, mouse, '\', date, ...
