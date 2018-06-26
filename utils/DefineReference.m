@@ -1,4 +1,4 @@
-function [ref] = DefineReference(volume, n)
+function [ref] = defineReference(volume, n)
 %   DEFINEREFERENCE: build a moving volume reference from an input
 %       sequence of volume
 

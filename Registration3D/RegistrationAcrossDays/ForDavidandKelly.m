@@ -22,7 +22,7 @@ volumes = reshape(volumes, [I, J, P, V]);
 
 
 %% Define reference volume and edges
-refvol = DefineReference(volumes, V);
+refvol = defineReference(volumes, V);
 edges = [10, 10, 60, 60]; % top, bottom, left, right
 
 
@@ -51,7 +51,7 @@ hold off;
 
 volumesred = sbxReadPMT(pathvolumes, 0, P*V, 1); % red channel
 volumesred = reshape(volumesred, [I, J, P, V]);
-refvolred = DefineReference(volumesred, V);
+refvolred = defineReference(volumesred, V);
 figure; imshow(mat2gray(mean(refvolred(edges(1):end-edges(2),edges(3):end-edges(4),:),3)));
 
 redplane = mean(refvolred(:,:,closestplane-2:closestplane+2),3);

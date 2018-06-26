@@ -51,7 +51,7 @@ end
 
 % REFERENCE 1: define, register and save reference 1
 disp('reference 1');
-ref1 = DefineReference(data, n); 
+ref1 = defineReference(data, n); 
 [Ref1RowShifts,Ref1ColumnShifts] = DetermineXYShifts(ref1,...
     blurfactor,keepingfactor,ref1(:,:,:,1));
 [ref1reg] = ApplyXYShifts(ref1, Ref1RowShifts, Ref1ColumnShifts);
@@ -88,7 +88,7 @@ clear data; clear RowShiftsXY1; clear ColumnShiftsXY1;
 
 % REFERENCE 2
 disp('reference 2');
-ref2 = DefineReference(datareg1, n);
+ref2 = defineReference(datareg1, n);
 [Ref2RowShifts,Ref2ColumnShifts] = DetermineXYShifts(ref2(:,:,:,:),...
     blurfactor,keepingfactor,ref2(:,:,:,1));
 [ref2reg] = ApplyXYShifts(ref2, Ref2RowShifts, Ref2ColumnShifts);
@@ -119,7 +119,7 @@ clear datareg1; clear RowShiftsZ; clear ColumnShiftsZ; clear ZShifts;
 
 % REFERENCE 3
 disp('reference 3');
-ref3 = DefineReference(datareg2, n);
+ref3 = defineReference(datareg2, n);
 [Ref3RowShifts,Ref3ColumnShifts] = DetermineXYShifts(ref3(:,:,:,:),...
     blurfactor,keepingfactor,ref3(:,:,:,1));
 [ref3reg] = ApplyXYShifts(ref3, Ref3RowShifts, Ref3ColumnShifts);
