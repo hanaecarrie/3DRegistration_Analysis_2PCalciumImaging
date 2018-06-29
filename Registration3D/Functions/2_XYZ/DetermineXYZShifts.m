@@ -2,6 +2,25 @@ function[ZShifts,RowShifts,ColumnShifts] = DetermineXYZShifts(...
     full_vol, BlurFactor, KeepingFactor, ReferenceVolumeIndex, ...
     nPlanesPerReferenceVolume, nPlanesForCorrelation)
 
+%   DETERMINEXYZSHITS: determine XYZ shifts per plane with a parfor loop
+%
+%   Inputs:
+%     full_vol -- 4D matrix of uint16 or other, dim (x,y,z,t)
+%     BlurFactor -- width of the gaussian filter (ex: 1)
+%     KeepingFactor -- 0 < KeepingFactor < 1, % of FOV taken into account,
+%       removes edges to determine shifts (ex: 0.95)
+%     ReferenceVolume -- 4D matrix of uint, moving volume reference, 
+%       dim (x,y,z,t/n) with n = nb avg frames per reference volume
+%     nPlanesPerReferenceVolume -- int, nb planes per ref volume 
+%     nPlanesForCorrelation -- int, nb of planes to take into account for
+%       spatial correlations
+%   Outputs:
+%     RowShifts -- 2D matrix of doubles, dim (z,t)
+%     ColumnShifts -- 2D matrix of doubles, dim (z,t)
+%     ZShifts -- 2D matrix of doubles, dim (z,t)
+
+    tStartDXYZS = tic;
+
     Size = size(full_vol);
     Keep = KeepingFactor;
     red_vol = full_vol(...
@@ -31,7 +50,7 @@ function[ZShifts,RowShifts,ColumnShifts] = DetermineXYZShifts(...
 
     OrderedVolumes = OrderedVolumes(:,:,...
         ceil(Size(3)/2)-ceil(nPlanesPerReferenceVolume/2-1):...
-        ceil(Size(3)/2)+ceil(nPlanesPerReferenceVolume/2-1)+1,:); %XXX
+        ceil(Size(3)/2)+ceil(nPlanesPerReferenceVolume/2-1)+1,:);
     ReferenceVolume = OrderedVolumes(:,:,:,referenceTimePoint);  
     
     disp('Find best matching planes...');
@@ -51,4 +70,7 @@ function[ZShifts,RowShifts,ColumnShifts] = DetermineXYZShifts(...
     RowShifts = RowShifts + RowShifts2;
     ColumnShifts = ColumnShifts + ColumnShifts2;
     
+    tEndDXYZS = toc(tStartDXYZS);
+    fprintf('DetermineXYZShifts is %d minutes and %f seconds\n.', ...
+        floor(tEndDXYZS/60),rem(tEndDXYZS,60));
 end

@@ -2,12 +2,12 @@ function[correctedVolume] = ApplyXYZShifts(fullVolume,...
     ZShifts, ColumnShifts, RowShifts)
 
 %   APPLYXYZSHITS: apply XY shifts per plane with a parfor loop
-
+%
 %   Inputs:
 %     fullVolume -- 4D matrix of uint16 or other, dim (x,y,z,t)
 %     ZShifts -- 2D matrix of doubles, dim (z,t)
-%     ColumnShifts -- 2D matrix of doubles, dim 
-%     RowShifts -- 2D matrix of doubles, dim 
+%     ColumnShifts -- 2D matrix of doubles, dim (z,t)
+%     RowShifts -- 2D matrix of doubles, dim (z,t)
 %   Outputs:
 %     correctedVolume -- 4D matrix of uint16 or other, dim (x,y,z,t)
 

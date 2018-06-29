@@ -1,7 +1,19 @@
 function[correctedVolume] = ApplyZShiftInterpolate(Volume,...
     ZShifts, ColumnShifts, RowShifts)
 
-    tic;
+%   APPLYXYZSHITINTERPOLATE: apply XY shifts per plane with a parfor loop
+%   using a cubic interpolation
+%
+%   Inputs:
+%     Volume -- 4D matrix of uint16 or other, dim (x,y,z,t)
+%     ZShifts -- 2D matrix of doubles, dim (z,t)
+%     ColumnShifts -- 2D matrix of doubles, dim (z,t)
+%     RowShifts -- 2D matrix of doubles, dim (z,t)
+%   Outputs:
+%     correctedVolume -- 4D matrix of uint16 or other, dim (x,y,z,t)
+
+    tStartAXYZSI = tic;
+
     correctedVolume = zeros(size((Volume)));
     WidthCorr = floor((size(Volume, 3) - size(ZShifts, 1)));
     
@@ -25,9 +37,10 @@ function[correctedVolume] = ApplyZShiftInterpolate(Volume,...
          % resample volume with linear interpolation on every integer plane
          correctedVolume(:,:,:,t) = ZSerieReg.Data;    
     end
-    tEnd = toc;
-    fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
-        floor(tEnd/60),rem(tEnd,60));  
+
+    tEndAXYZSI = toc(tStartAXYZSI);
+    fprintf('ApplyXYZShiftInterpolate in %d minutes and %f seconds\n.',...
+        floor(tEndAXYZSI/60),rem(tEndAXYZSI,60)); 
 end
 
 

@@ -1,8 +1,10 @@
-function [closestplane, corrvector] = SpatialCorrPlaneVolume(...
+function [closestplane, corrvector] = ComputeZshiftPlaneVolume(...
     refvol, plane, edges)
-% ComputeZshiftPlaneVolume
-% get the closest plane in the ref volume by computing spatial correlation
-% between the ref planes and the considered plane
+
+% COMPUTEZSHIFTPLANEVOLUME: get the closest plane in the ref volume by
+% computing spatial correlation between the ref planes and the considered
+% plane
+%
 % Inputs:
 %   refvol - the reference volume, 3D matrix of double, dim = x,y,z
 %   plane - the test plane, 2D matrix of double, dim = x,y
@@ -56,6 +58,6 @@ function [closestplane, corrvector] = SpatialCorrPlaneVolume(...
     closestplane = J; % get the closestplane
 
     tEndCZPV = toc(tStartCZPV);
-    fprintf('ComputeZshiftPlaneVolume in %d minutes and %f seconds\n.', ...
+    fprintf('ComputeZshiftPlaneVolume in %d minutes and %f seconds\n.',...
         floor(tEndCZPV/60),rem(tEndCZPV,60));
 end

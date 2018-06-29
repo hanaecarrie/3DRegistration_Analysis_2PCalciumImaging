@@ -1,6 +1,20 @@
 function[RowShifts,ColumnShifts,OrderedVolumes] = OrderVolumes(...
     tvector,Size,BlurFactor,red_vol)
-    tic;
+
+%   ORDERVOLUMES: 
+%
+%   Inputs:
+%     tvector - vector of times  
+%     Size -- [x,y,z,t] 4 values vector, size of the date
+%     BlurFactor -- width of the gaussian filter (ex: 1)
+%     red_vol -- 4D matrix of uint16
+%   Outputs:
+%     RowShifts -- 2D matrix of doubles, dim (z,t)
+%     ColumnShifts -- 2D matrix of doubles, dim (z,t)
+%     OrderedVolumes -- 4D matrix, ordered volumes
+
+    tStartOV = tic;
+
     S3 = Size(3); S4 = Size(4);
     stackFixed = zeros(size(red_vol));
     RowShifts = zeros(S3, S4);
@@ -22,7 +36,7 @@ function[RowShifts,ColumnShifts,OrderedVolumes] = OrderVolumes(...
             output = dftregistrationAlex(...
                 fft2(imgaussfilt(stackFixed(:,:,inda,BlurFactor)),...
                 fft2(imgaussfilt(red_vol(:,:,indb,t),...
-                BlurFactor)),10);
+                BlurFactor)),10));
             row_shift = output(1);
             column_shift = output(2);
             stackFixed(:,:,indb) = imtranslate(...
@@ -33,7 +47,8 @@ function[RowShifts,ColumnShifts,OrderedVolumes] = OrderVolumes(...
         
         OrderedVolumes(:,:,:,t) = stackFixed;
     end
-    tEnd = toc;
-    fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
-        floor(tEnd/60),rem(tEnd,60));
+
+    tEndOV = toc(tStartOV);
+    fprintf('OrderVolumes is %d minutes and %f seconds\n.', ...
+        floor(tEndOV/60),rem(tEndOV,60));
 end

@@ -1,6 +1,21 @@
 function[RowShifts,ColumnShifts] = DetermineXYShifts(full_vol,...
     BlurFactor,KeepingFactor,ReferenceVolume)
-    tic;
+
+%   DETERMINEXYSHITS: determine XY shifts per plane with a parfor loop
+%
+%   Inputs:
+%     full_vol -- 4D matrix of uint16 or other, dim (x,y,z,t)
+%     BlurFactor -- width of the gaussian filter (ex: 1)
+%     KeepingFactor -- 0 < KeepingFactor < 1, % of FOV taken into account,
+%       removes edges to determine shifts (ex: 0.95)
+%     ReferenceVolume -- 4D matrix of uint, moving volume reference, 
+%       dim (x,y,z,t/n) with n = nb avg frames per reference volume
+%   Outputs:
+%     RowShifts -- 2D matrix of doubles, dim (z,t)
+%     ColumnShifts -- 2D matrix of doubles, dim (z,t)
+
+    tStartDXYS = tic;
+
     Size = size(full_vol);
     S3 = size(full_vol, 3); S4 = size(full_vol, 4);
     Keep = KeepingFactor;
@@ -28,7 +43,8 @@ function[RowShifts,ColumnShifts] = DetermineXYShifts(full_vol,...
             ColumnShifts(i,t) = output(2);
         end
     end
-    tEnd = toc;
-    fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
-        floor(tEnd/60),rem(tEnd,60));
+
+    tEndDXYS = toc(tStartDXYS);
+    fprintf('DetermineXYShifts is %d minutes and %f seconds\n.', ...
+        floor(tEndDXYS/60),rem(tEndDXYS,60));
 end
