@@ -1,7 +1,7 @@
 function [] = RegistrationKelly(mouse, date, runs, refchannel, ...
     edges, blurfactor, keepingfactor, n, planescorr,...
     nbchunck, m1, varargin)
-% REGISTRATIONMICROGLIA: performs registration of microglia movies
+% REGISTRATIONKELLY: performs registration of Kelly movies
 
 %   Inputs:
 %     mouse -- str, mouse name
@@ -10,7 +10,7 @@ function [] = RegistrationKelly(mouse, date, runs, refchannel, ...
 %     refchannel -- 0 for green or 1 for red, channel on which the
 %         registration is performed
 %     edges -- array of int, dim 1x4, number of pixels to remove
-%         [left, right, top, bottom] %XXX tocheck
+%         [left, right, top, bottom]
 %     blurfactor -- float, width of the gaussian filter
 %         keepingfactor --  float in ]0,1[,
 %         croping indicator for z correction

@@ -1,7 +1,32 @@
 function [] = RegistrationDura(mouse, date, runs, ...
     edges, blurfactor, keepingfactor, n, planescorr,...
     nbchunck, m1, varargin)
-% REGISTRATIONDURA: performs registration of microglia movies
+
+% REGISTRATIONDURA: performs registration of the dura movies
+%
+%   Inputs:
+%     mouse -- str, mouse name
+%     date -- str, imaging session date
+%     runs -- int or list of int, run numbers
+%     refchannel -- 0 for green or 1 for red, channel on which the
+%         registration is performed
+%     edges -- array of int, dim 1x4, number of pixels to remove
+%         [left, right, top, bottom]
+%     blurfactor -- float, width of the gaussian filter
+%         keepingfactor --  float in ]0,1[,
+%         croping indicator for z correction
+%     n -- int > 0, number of volumes to define a moving reference, n
+%         should divide the total number of volumes
+%     planescorr -- int in ]0, nbplanes/2[, 
+%         the spatial correlation will be computed between the considered
+%         plane and the planescorr olanes above and the planescorr planes
+%         below
+%     nbchunck -- int > 0, number of chunck to save tiff images, nbchuncl
+%         should divide the number of volumes
+%     m1 -- int, extension to add when saving the sbx files per plane
+%         new run = (oldrun*m1) + planenumber
+%   Outputs:
+%     none
 
     p = inputParser;
     addOptional(p, 'strdate', ...

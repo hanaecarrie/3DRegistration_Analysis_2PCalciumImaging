@@ -2,6 +2,34 @@ function [datareg3, savingpathbegin] = XYZXYRegistration(inputsbxpath, ...
     mouse, date, run, channel, n, blurfactor, keepingfactor,...
     edges, planescorr, nbchunck, sizedata, varargin)
 
+% XYZXYREGISTRATION: performs registration of the dura movies
+%
+%   Inputs:
+%     inputsbxpath --
+%     mouse -- str, mouse name
+%     date -- str, imaging session date
+%     runs -- int or list of int, run numbers
+%     channel -- 0 for green or 1 for red, channel on which the
+%         registration is performed
+%     n -- int > 0, number of volumes to define a moving reference, n
+%         should divide the total number of volumes
+%     blurfactor -- float, width of the gaussian filter
+%     keepingfactor --  float in ]0,1[,
+%         croping indicator for z correction
+%     edges -- array of int, dim 1x4, number of pixels to remove
+%         [left, right, top, bottom]
+%     planescorr -- int in ]0, nbplanes/2[, 
+%         the spatial correlation will be computed between the considered
+%         plane and the planescorr olanes above and the planescorr planes
+%         below
+%     nbchunck -- int > 0, number of chunck to save tiff images, nbchuncl
+%         should divide the number of volumes
+%     sizedata -- array of 4 int (x,y,z,t) size of the data
+%   Outputs:
+%     datareg3 -- 4D matrix in uint16, registered data
+%     savingpathbegin -- str, begin of the path where the registration is
+%          saved
+
 tStartXYZXYR = tic;
 
 p = inputParser;
