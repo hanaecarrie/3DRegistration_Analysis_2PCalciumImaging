@@ -1,5 +1,6 @@
-function [] = CorrectWarpingFred(inputpath,...
-    savingpath, mouse, date, run, Nz, sizechunk)
+function [] = CorrectWarpingFred(inputpath,savingpath, ...
+    mouse, date, run, Nz, sizechunk)
+
 % CORRECTWARPINGFRED: Compute and apply unwarping on both channels with 
 % affine and dft transformation along the z axis for a given volume
 % 

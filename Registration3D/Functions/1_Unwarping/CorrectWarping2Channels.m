@@ -1,5 +1,6 @@
 function [outputpaths, EdgesWarp] = CorrectWarping2Channels(inputpath, outputpath,...
     mouse, date, run, channel, blurfactor, edges, chunck, sizedata, server)
+
 % CORRECTWARPING2CHANNELS: Compute, apply and return xy shifts 
 % along the z axis for a given volume
 % 
