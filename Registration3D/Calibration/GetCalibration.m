@@ -49,8 +49,17 @@ vol = padarray(vol, [edges(4), edges(2)], 'post');
 %% Register affine warping
 
 path = strcat('E:\hanae_data\Microglia\calibration\pollenvolume.sbx');
-sbxAlignAffineDFT({path}, 'tbin', 0, 'refsize', 1, 'refoffset', 0);
-sbxSaveAlignedSBX(path);
+% sbxAlignAffineDFT({path}, 'tbin', 0, 'refsize', 1, 'refoffset', 0);
+% sbxSaveAlignedSBX(path);
+
+%% Load Fit
+
+pathfitC = 'E:\hanae_data\Microglia\calibration\Cfit';
+fitC = load(pathfitC);
+fitC = fitC.fit2;
+pathfitR = 'E:\hanae_data\Microglia\calibration\Rfit';
+fitR = load(pathfitR);
+fitR = fitR.fit1;
 
 %% optitune values
 
@@ -70,7 +79,8 @@ axis([0 1800 -110 0]);
 %eqn will be a string representing the equation
 title('Calibration');
 view([90 -90]);
-%%
+
+%% Plot figures
 figure;
 distance = sqrt(ColumnShifts.^2+RowShifts.^2);
 plot(midoptlev, distance, 'r');

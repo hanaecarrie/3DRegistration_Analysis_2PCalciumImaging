@@ -284,35 +284,6 @@ ylabel('pixel shift (no unit)');
 title('Row Shifts across planes');
 view([90 -90]);
 
-
-%%
-
-
-% CWgreen(CWgreen >0) = 0;
-% CWred(CWred >0) = 0;
-% 
-% x = 1:124; yg = CWgreen; yr = CWred;
-% figure;
-% H(1) = shadedErrorBar(x, yg, {@mean, @(x) 1*std(x)  }, 'Color', green, 0); hold on;
-% H(2) = shadedErrorBar(x, yr, {@mean, @(x) 1*std(x)  },  'Color', red, 0);
-% 
-% 
-% RWgreen(RWgreen >0) = 0;
-% RWred(RWred >0) = 0;
-% 
-% x = 1:124; yg = RWgreen; yr = RWred;
-% figure;
-% H(1) = shadedErrorBar(x, yg, {@mean, @(x) 1*std(x)  }, 'Color', green, 0); hold on;
-% H(2) = shadedErrorBar(x, yr, {@mean, @(x) 1*std(x)  }, 'Color', red, 0);
-
-% %%
-% t = plot(midoptlev, RowShifts, 'b', 'Linewidth', 1.5); 
-% t2 = plot(midoptlev, ColumnShifts, 'b', 'Linewidth', 1.5); 
-% 
-% path_tformopt = 'D:\twophoton_data\2photon\scan\VF42\170428_VF42\170428_VF42_run248\tforms_optitune';
-% tform_opt = load(path_tformopt);
-% tform_opt = tform_opt.tforms_optitune;
-
 %% Across time
 
 CWbin = zeros(20,124);

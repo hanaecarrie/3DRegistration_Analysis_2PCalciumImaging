@@ -4,8 +4,6 @@ clear all;
 close all;
 clc;
 
-addpath(genpath('D:\Analysis_scripts\Dropbox\AndermannLab\users\arthur'));
-startup;
 %%
 
 % Choose datafile
