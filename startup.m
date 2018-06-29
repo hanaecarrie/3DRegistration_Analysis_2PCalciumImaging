@@ -14,7 +14,7 @@ cd(svncore);
 coreSetup(svnroot,ijroot,'mandermann');
 
 % default folder
-cd('D:\Analysis_scripts\Dropbox\AndermannLab\users\hanae\code');
+cd('D:\Analysis_scripts\Dropbox\AndermannLab\users\hanae\3DRegistration_Analysis_2PCalciumImaging\');
 clear all
 dbstop if error;
 
