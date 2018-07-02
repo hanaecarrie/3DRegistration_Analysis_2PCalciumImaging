@@ -15,7 +15,7 @@ function [] = RegistrationMicroglia(mouse, date, runs, refchannel, ...
 %     keepingfactor --  float in ]0,1[,
 %         croping indicator for z correction (ex: 0.95)
 %     n -- int > 0, number of volumes to define a moving reference, n
-%         should divide the total number of volumes
+%         should divide the total number of volumes (ex: 10 microglia)
 %     planescorr -- int in ]0, nbplanes/2[, 
 %         the spatial correlation will be computed between the considered
 %         plane and the planescorr olanes above and the planescorr planes
@@ -23,7 +23,7 @@ function [] = RegistrationMicroglia(mouse, date, runs, refchannel, ...
 %     nbchunck -- int > 0, number of chunck to save tiff images, nbchuncl
 %         should divide the number of volumes (ex: 10)
 %     m1 -- int, extension to add when saving the sbx files per plane
-%         new run = (oldrun*m1) + planenumber
+%         new run = (oldrun*m1) + planenumber (ex: 1000 if nbplanes >100)
 %   Outputs:
 %     none
 

@@ -12,7 +12,7 @@ function [datareg3, savingpathbegin] = XYZXYRegistration(inputsbxpath, ...
 %     channel -- 0 for green or 1 for red, channel on which the
 %         registration is performed
 %     n -- int > 0, number of volumes to define a moving reference, n
-%         should divide the total number of volumes
+%         should divide the total number of volumes (ex: 30 dura)
 %     blurfactor -- float, width of the gaussian filter (ex: 1)
 %     keepingfactor --  float in ]0,1[,
 %         croping indicator for z correction (ex: 0.95)
@@ -23,7 +23,7 @@ function [datareg3, savingpathbegin] = XYZXYRegistration(inputsbxpath, ...
 %         plane and the planescorr olanes above and the planescorr planes
 %         below (ex: 3)
 %     nbchunck -- int > 0, number of chunck to save tiff images, nbchunck
-%         should divide the number of volumes
+%         should divide the number of volumes (ex: 10)
 %     sizedata -- array of 4 int (x,y,z,t) size of the data
 %   Outputs:
 %     datareg3 -- 4D matrix in uint16, registered data
