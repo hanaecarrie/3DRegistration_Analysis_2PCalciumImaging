@@ -165,14 +165,15 @@ maxperROI = max(timecourseallROIS, [], 2);
 
 timecourseallROISnorm = timecourseallROIS;
 for i = 1:size(timecourseallROIS, 1)
-    timecourseallROISnorm(i,:) = timecourseallROISnorm(i,:)-min(timecourseallROISnorm(i,:));
+    timecourseallROISnorm(i,:) = ...
+        timecourseallROISnorm(i,:)-min(timecourseallROISnorm(i,:));
     timecourseallROISnorm(i,:) = timecourseallROISnorm(i,:)/maxperROI(i);
 end
 
 %% sorting 1
 
-% traces = timecourseallROIS;
-traces = tracesuniquesrois;
+traces = timecourseallROIS;
+% traces = tracesuniquesrois;
 
 score = zeros(size(traces,1),1);
 for i = 1: size(traces,1)
@@ -199,7 +200,7 @@ set(gca,'YTick',0:100:size(newtraces,1));
 
 %% plane 21 only
 
-traces21 = traces(438:438+nbrois(21),:);
+traces21 = timecourseallROISsmooth(438:438+nbrois(21),:);
 
 score21 = zeros(size(traces21,1),1);
 for i = 1: size(traces21,1)
@@ -228,69 +229,79 @@ ylabel('ROI number');
 
 
 %% mean volume
+% 
+% path1 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_1\volumeregaffine\DL89_171122_1_volumeregaffine.sbx';
+% path2 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_2\volumeregacrossrunsZ\DL89_171122_2_volumeregacrossrunsZ.sbx';
+% path4 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_3\volumeregacrossrunsZ\DL89_171122_3_volumeregacrossrunsZ.sbx';
+% path3 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_4\volumeregacrossrunsZ\DL89_171122_4_volumeregacrossrunsZ.sbx';
+% path5 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_5\volumeregacrossrunsZ\DL89_171122_5_volumeregacrossrunsZ.sbx';
+% path6 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_6\volumeregacrossrunsZ\DL89_171122_6_volumeregacrossrunsZ.sbx';
+% 
+% vol1 = sbxReadPMT(path1);
+% vol1 = reshape(vol1, [512, 796, 30, 930]);
+% vol1 = mean(vol1, 4);
+% proj1 = sum(vol1, 3);
+% 
+% vol2 = sbxReadPMT(path2);
+% vol2 = reshape(vol2, [512, 796, 30, 930]);
+% vol2 = mean(vol2, 4);
+% proj2 = sum(vol2, 3);
+% 
+% vol3 = sbxReadPMT(path3);
+% vol3 = reshape(vol3, [512, 796, 30, 930]);
+% vol3 = mean(vol3, 4);
+% proj3 = sum(vol3, 3);
+% 
+% vol4 = sbxReadPMT(path4);
+% vol4 = reshape(vol4, [512, 796, 30, 930]);
+% vol4 = mean(vol4, 4);
+% proj4 = sum(vol4, 3);
+% 
+% vol5 = sbxReadPMT(path5);
+% vol5 = reshape(vol5, [512, 796, 30, 930]);
+% vol5 = mean(vol5, 4);
+% proj5 = sum(vol5, 3);
+% 
+% vol6 = sbxReadPMT(path6);
+% vol6 = reshape(vol6, [512, 796, 30, 930]);
+% vol6 = mean(vol6, 4);
+% proj6 = sum(vol6, 3);
+% 
+% proj = proj1 + proj2 + proj3 + proj4 + proj5 + proj6;
 
-path1 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_1\volumeregaffine\DL89_171122_1_volumeregaffine.sbx';
-path2 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_2\volumeregacrossrunsZ\DL89_171122_2_volumeregacrossrunsZ.sbx';
-path4 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_3\volumeregacrossrunsZ\DL89_171122_3_volumeregacrossrunsZ.sbx';
-path3 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_4\volumeregacrossrunsZ\DL89_171122_4_volumeregacrossrunsZ.sbx';
-path5 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_5\volumeregacrossrunsZ\DL89_171122_5_volumeregacrossrunsZ.sbx';
-path6 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_6\volumeregacrossrunsZ\DL89_171122_6_volumeregacrossrunsZ.sbx';
-
-vol1 = sbxReadPMT(path1);
-vol1 = reshape(vol1, [512, 796, 30, 930]);
-vol1 = mean(vol1, 4);
-proj1 = sum(vol1, 3);
-
-vol2 = sbxReadPMT(path2);
-vol2 = reshape(vol2, [512, 796, 30, 930]);
-vol2 = mean(vol2, 4);
-proj2 = sum(vol2, 3);
-
-vol3 = sbxReadPMT(path3);
-vol3 = reshape(vol3, [512, 796, 30, 930]);
-vol3 = mean(vol3, 4);
-proj3 = sum(vol3, 3);
-
-vol4 = sbxReadPMT(path4);
-vol4 = reshape(vol4, [512, 796, 30, 930]);
-vol4 = mean(vol4, 4);
-proj4 = sum(vol4, 3);
-
-vol5 = sbxReadPMT(path5);
-vol5 = reshape(vol5, [512, 796, 30, 930]);
-vol5 = mean(vol5, 4);
-proj5 = sum(vol5, 3);
-
-vol6 = sbxReadPMT(path6);
-vol6 = reshape(vol6, [512, 796, 30, 930]);
-vol6 = mean(vol6, 4);
-proj6 = sum(vol6, 3);
-
-proj = proj1 + proj2 + proj3 + proj4 + proj5 +proj6;
+proj = load('E:\hanae_data\Dura\AnalysisDura\proj');
+proj = proj.proj;
 
 %% plot superimpose Rois map and projection
 
 io = mat2gray(proj(10:end-10,80:end-80));
 %iob = imbinarize(allmasks(10:end-10,80:end-80));
-iob = imbinarize(double(mask(10:end-10,80:end-80)));
-green=zeros(size(io,1),size(io,2),3);
-green(:,:,2)=1;
-iob_p=bwperim(iob);
+iob = imbinarize(double(masksallplanes(10:end-10,80:end-80)));
+green = zeros(size(io,1),size(io,2),3);
+green(:,:,2) = 1;
+iob_p = bwperim(iob);
 
 figure,imshow(io)
 hold all
-h=imshow(green);
+h=imshow(green(:,:,1));
 set(h,'AlphaData',iob_p);
 
-
 %%
+
+running = sbxSpeed('DL89', '171122', 1);
+for i = 2:6
+running = cat(2, running, sbxSpeed('DL89', '171122', i));
+end
+n = 30; % average every n values
+a = reshape(running,[],1); % arbitrary data
+running = arrayfun(@(i) mean(a(i:i+n-1)),1:n:length(a)-n+1)';
+
  
 tracesbeforeCSD = newtraces(:,1:930*2);
 tracesafterCSD = newtraces(:,930*3+1:end);
-running = Running;
 running(running <0) = 0;
 
-for i = 1:682
+for i = 1:656
     tracesbeforeCSD(i,:) = smooth(tracesbeforeCSD(i,:));
     tracesafterCSD(i,:) = smooth(tracesafterCSD(i,:));
 end
@@ -301,20 +312,27 @@ beforesort = before;
 beforesort = beforesort(:,order);
 plot(beforesort(1,:));
 
+%%
+
+roinum = 21;
+figure;
 scatter(beforesort(1,:), beforesort(2,:));
-scatter(running(1:930*2), (tracesbeforeCSD(15,:)));
+scatter(running(1:930*2), (tracesbeforeCSD(roinum,:)));
 xlim([0 25]); ylim([0 1]);
 hold on;
-scatter(running(1+930*3:end), (tracesafterCSD(15,:)), 'r');
+scatter(running(1+930*3:end), (tracesafterCSD(roinum,:)), 'r');
 xlim([0 25]); ylim([0 1]);
+title(strcat('dff w.r.t. running state - DL89 - ROI n°', num2str(roinum)));
+legend('before CSD', 'after CSD');
+
 
 %%
-n = 6;
-% % 
-dff1all = zeros(682,62);
-dff2all = zeros(682,155);
+n = 6; % nb runs
 
-for cell = 1:682
+dff1all = zeros(656,62);
+dff2all = zeros(656,155);
+
+for cell = 1:656
     disp(cell);
 
 meanrun = reshape(running', [n 5580/n]);
@@ -374,11 +392,8 @@ dff2all(cell, :) = dff2;
 
 end
 
-%%
-
 dff1all = dff1all(200:400,:);
 dff2all = dff2all(200:400,:);
-%%
 
 k = 45;
 l = 133;
@@ -392,7 +407,8 @@ S = std(dff1all(:,k:end));
 minenv = mean(dff1all(:,k:end))-S/10; maxenv = mean(dff1all(:,k:end))+S/10;
 x = [x,fliplr(x)];    % repeat x values
 yy = [minenv, fliplr(maxenv)];   % vector of upper & lower boundaries
-h(2) = fill(x,yy, 'b', 'LineStyle','none');    % fill area defined by x & yy in blue
+h(2) = fill(x,yy, 'b', 'LineStyle','none');
+% fill area defined by x & yy in blue
 alpha(h(2), 0.3);
 hold on;
 x = run2(l:end);
@@ -402,13 +418,19 @@ S = std(dff2all(:,l:end));
 minenv = mean(dff2all(:,l:end))-S/10; maxenv = mean(dff2all(:,l:end))+S/10;
 x = [x,fliplr(x)];    % repeat x values
 yy = [minenv, fliplr(maxenv)];   % vector of upper & lower boundaries
-h(3) = fill(x,yy, 'r', 'LineStyle','none');    % fill area defined by x & yy in blue
+h(3) = fill(x,yy, 'r', 'LineStyle','none');
+% fill area defined by x & yy in blue
 alpha(h(3), 0.3);
 
 xlim([0 12]);
+legend('before CSD', 'envelopeWIP', 'after CSD', 'envelopeWIP');
+title('axon sensitivity before and after CSD');
+xlabel('running state'); ylabel('mean dff');
+
 
 %%
-for i = uniquesidx
+
+for i =  [34, 36, 39, 46, 55, 91, 142]
 axon = i;
 figure;
 scatter(run1(k:end), dff1all(axon,k:end)/2);
@@ -426,20 +448,10 @@ end
 % times = linspace(xdata(1),xdata(end));
 % plot(times, fun(x,times));
 
-%%
 
-% ii = [34, 36, 39, 46, 55, 91, 142];
-ii = [46, 91];
-c = 0;
-figure;
-for i = ii
-    figure;
-    plot(smooth(smooth(newtraces(i,:)/2)+c)); hold on;
+%% Show interesting ROIs
 
-end
-
-
-%%
+% examples
 planes = [3,4,4,4,5,10,11];
 rois = [10,2,5,12,9,4,31];
 
