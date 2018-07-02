@@ -3,7 +3,7 @@ function [] = saveSBXfilesPerPlane(mouse, date, run, channel,...
 
 %   SAVESBXFILESPERPLANE: save each plane of the 4D volume as
 %       fake runs with a sbx file per plane
-
+/
 %   Inputs:
 %     mouse -- str, mouse name
 %     date -- str, imaging session date

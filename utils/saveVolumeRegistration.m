@@ -3,7 +3,7 @@ function [] = saveVolumeRegistration(savingpath, volume, namefile,...
 
 %   SAVEVOLUMEREGISTRATION: save each plane of the 4D volume as
 %       fake runs with a sbx file per plane
-
+%
 %   Inputs:
 %     savingpath -- str, path to folder where to save the data 
 %     volume -- input volume to save, 4D matrix of double, dim = x,y,z,t

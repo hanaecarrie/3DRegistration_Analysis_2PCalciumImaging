@@ -1,7 +1,7 @@
 function [ref] = defineReference(volume, n)
 %   DEFINEREFERENCE: build a moving volume reference from an input
 %       sequence of volume
-
+%
 %   Inputs:
 %     volume - input the volume, 4D matrix of double, dim = x,y,z,t
 %     n - number of frames to average together for the moving reference

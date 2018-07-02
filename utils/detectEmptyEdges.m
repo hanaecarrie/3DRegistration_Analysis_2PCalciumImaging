@@ -4,7 +4,7 @@ function [Edges] = detectEmptyEdges(data)
 %   for each plane and taking the maximum pixels to crop
 %   (useful for optotune, to be used as input to crop the volume to get
 %   the maximum stable FOV across planes)
-
+%
 %   Inputs:
 %     data - the input volume, 4D matrix of double, dim = x,y,z,t
 %   Outputs:
