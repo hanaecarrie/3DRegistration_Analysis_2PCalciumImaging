@@ -17,7 +17,9 @@ function [outputpath, EdgesWarp] = CorrectWarping1Channel(inputpath, ...
 %         [top, bottom, left, right]
 %     chunck -- int, nb of chuncks for tiff
 %   Outputs:
-%     none
+%     outputpath -- str, updated path to a saving folder
+%     EdgesWarp -- array of int dim 1x4, [xleft, xright, ytop, ybottom]
+%       number of pixels to crop due to the warping
 
 tStartCW1C = tic; % starting time
 

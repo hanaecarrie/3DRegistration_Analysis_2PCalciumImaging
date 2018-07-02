@@ -19,7 +19,7 @@ function unwarp_chunk = UnwarpChunkFred(vol30,nbchunck,...
 %     Nz -- nb of planes
 %     pxshift -- unknown parameter = 0
 %   Outputs:
-%     unwarp_chunk -- list of affine 2D object,
+%     unwarp_chunk -- list of affine 2D object
 
     for i = 1:nbchunck
         c_i = 1:Nz:size(vol30,4);
@@ -32,12 +32,7 @@ function unwarp_chunk = UnwarpChunkFred(vol30,nbchunck,...
             green_slice = squeeze(temp_vol(1,:,:,j));
             green_slice = uint16(shift_correction(green_slice,pxshift));
             green_slice = green_slice(ymin:ymax,xmin:xmax);
-            
-            % unwarp_vol(1,:,:,j,i) = imwarp(red_slice,...
-            %   tforms_optitune(j),'OutputView',imref2d(size(red_slice)));
-            % unwarp_vol(2,:,:,j,i) = imwarp(green_slice,...
-            %   tforms_optitune(j),'OutputView',imref2d(size(green_slice)));
-            
+
             unwarp_vol(1,:,:,j) = imwarp(red_slice,...
                 tforms_optitune(j),'OutputView',imref2d(size(red_slice)));
             unwarp_vol(2,:,:,j) = imwarp(green_slice,...
