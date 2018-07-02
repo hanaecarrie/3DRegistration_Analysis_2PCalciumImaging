@@ -1,4 +1,3 @@
-
 %%  Script unwarping shifts analysis
 
 clear all;
@@ -49,7 +48,8 @@ h(1) = plot(x, CWgreenmean, 'Color', green, 'Linewidth', 1.5);
 hold on;
 x = [x,fliplr(x)];        % repeat x values
 yy = [minenv, fliplr(maxenv)];   % vector of upper & lower boundaries
-h(2) = fill(x,yy, green, 'LineStyle','none');    % fill area defined by x & yy in blue
+h(2) = fill(x,yy, green, 'LineStyle','none');
+% fill area defined by x & yy in blue
 alpha(h(2), 0.5);
 axis([1 124 -110 0]);
 
@@ -60,7 +60,8 @@ x = 1:124;
 h(3) = plot(x, CWredmean,  'Color', red, 'Linewidth', 1.5);  
 x = [x,fliplr(x)];        % repeat x values
 yy = [minenv, fliplr(maxenv)];   % vector of upper & lower boundaries
-h(4) = fill(x,yy, red,'LineStyle','none');    % fill area defined by x & yy in blue
+h(4) = fill(x,yy, red,'LineStyle','none');
+% fill area defined by x & yy in blue
 alpha(h(4), 0.3);
 axis([1 124 -110 0]);
 
@@ -152,7 +153,7 @@ meanFred = mean(rightcolumns(2:end,1:end),1);
 meanFred = meanFred + abs(min(abs(meanFred)));
 meanFred(meanFred>0) =0;
 meanFred(1:3) = 0;
-h2 = plot(meanFred, 'k', 'Linewidth', 1.5);
+h2(1) = plot(meanFred, 'k', 'Linewidth', 1.5);
 axis([1 124 -110 0]);
 legend('method 2');
 xlabel('plane number from down to top (no unit)');
@@ -161,11 +162,12 @@ title('Column Shifts across planes');
 view([90 -90]);
 
 
- %% row 
-hold on;
+%% row 
+
 RWgreen(RWgreen >0) = 0;
 RWred(RWred >0) = 0;
 
+f = figure;
 minenv = min(RWgreen); maxenv = max(RWgreen);
 RWgreenmean = mean(RWgreen, 1);
 x = 1:124; 
@@ -199,7 +201,7 @@ axis([1 124 -120 0]);
 meanFred2 = nanmean(bottomlines(2:end,1:end),1);
 meanFred2(1) = 0; 
 meanFred2 = meanFred2 + abs(min(abs(meanFred2(2:end))));
-h(6) = plot(meanFred2, 'k', 'Linewidth', 1.5);
+f(6) = plot(meanFred2, 'k', 'Linewidth', 1.5);
 axis([1 124 -130 0]);
 
 legend('mean shifts green channel', 'green min-max envolope',...
@@ -216,16 +218,16 @@ view([90 -90]);
 %% row per method
 
 % 1A
-h1A = figure;
+f1A = figure;
 minenv = min(RWgreen); maxenv = max(RWgreen);
 RWgreenmean = mean(RWgreen, 1);
 x = 1:124; 
-h1A(1) = plot(x, RWgreenmean, 'Color', green, 'Linewidth', 1.5);
+f1A(1) = plot(x, RWgreenmean, 'Color', green, 'Linewidth', 1.5);
 hold on;
 x = [x,fliplr(x)];        % repeat x values
 yy = [minenv, fliplr(maxenv)];   % vector of upper & lower boundaries
-h1A(2) = fill(x,yy, green, 'LineStyle','none');    % fill area defined by x & yy in blue
-alpha(h1A(2), 0.5);
+f1A(2) = fill(x,yy, green, 'LineStyle','none');    % fill area defined by x & yy in blue
+alpha(f1A(2), 0.5);
 axis([1 124 -110 0]);
 
 legend('method 1A', 'envelope 1A');
@@ -236,16 +238,16 @@ title('Row Shifts across planes');
 view([90 -90]);
 
 % 1B
-h1B = figure;
+f1B = figure;
 minenv = min(RWred); maxenv = max(RWred);
 RWredmean = mean(RWred, 1);
 x = 1:124; 
-h1B(1) = plot(x, RWredmean,  'Color', red, 'Linewidth', 1.5);  
+f1B(1) = plot(x, RWredmean,  'Color', red, 'Linewidth', 1.5);  
 hold on;
 x = [x,fliplr(x)];        % repeat x values
 yy = [minenv, fliplr(maxenv)];   % vector of upper & lower boundaries
-h1B(2) = fill(x,yy, red,'LineStyle','none');    % fill area defined by x & yy in blue
-alpha(h1B(2), 0.3);
+f1B(2) = fill(x,yy, red,'LineStyle','none');    % fill area defined by x & yy in blue
+alpha(f1B(2), 0.3);
 axis([1 124 -110 0]);
 legend('method 1B', 'envelope 1B');
 xlabel('plane number from down to top (no unit)');
@@ -255,13 +257,13 @@ view([90 -90]);
 
 % 3
 
-h3 = figure;
+f3 = figure;
 path = sbxPath('VF42', '170428', 248, 'sbx');
 info = sbxInfo(path);
 minopt = info.otparam(1); maxopt = info.otparam(2);
 xopt = linspace(minopt, maxopt, 124);
 polynome = polyval(Rfit.coeff, xopt);
-h3(1) = plot(xopt*124/(maxopt-minopt), polynome, 'b', 'Linewidth', 1.5);
+f3(1) = plot(xopt*124/(maxopt-minopt), polynome, 'b', 'Linewidth', 1.5);
 axis([1 124 -110 0]);
 legend('method 3');
 xlabel('plane number from down to top (no unit)');
@@ -271,12 +273,12 @@ view([90 -90]);
 
 % 2
 
-h2 = figure;
+f2 = figure;
 meanFred = mean(bottomlines(2:end,1:end),1);
 meanFred = meanFred + abs(min(abs(meanFred)));
 meanFred(meanFred>0) =0;
 meanFred(1:3) = 0;
-h2 = plot(meanFred, 'k', 'Linewidth', 1.5);
+f2(1) = plot(meanFred, 'k', 'Linewidth', 1.5);
 axis([1 124 -110 0]);
 legend('method 2');
 xlabel('plane number from down to top (no unit)');
@@ -284,11 +286,11 @@ ylabel('pixel shift (no unit)');
 title('Row Shifts across planes');
 view([90 -90]);
 
-%% Across time
+%% Across time Columns
 
 CWbin = zeros(20,124);
 for i = 1:20
-    CWbin(i,:) = mean(ColumnShiftsW((i-1)*10+1:i*10,:));
+    CWbin(i,:) = mean(CWgreen((i-1)*10+1:i*10,:));
 end
 CWbin(CWbin>0) = 0;
 g = figure;
@@ -298,7 +300,7 @@ C = linspecer(N);
 axes('ColorOrder',C,'NextPlot','replacechildren')
 x = 1:124; 
 plot(x, CWbin(1:end,1:end));
-axis([1 124 -40 0]);
+axis([1 100 -40 0]);
 legend('00:00-01:20', '01:20-02:40', '02:40-04:00', '04:00-05:20', ...
     '05:20-06:40', '06:40-08:00','08:00-09:20','09:20-10:40',...
     '10:40-12:00','12:00-13:20','13:20-14:40','14:40-16:00',...
@@ -306,14 +308,14 @@ legend('00:00-01:20', '01:20-02:40', '02:40-04:00', '04:00-05:20', ...
     '21:20-22:40','22:40-24:00','24:00-25:20','25:20-26:40');
 %ylabel('number of cropped pixels');
 xlabel('plane number');
-title('mouseVF66 date171019 run200 - unwarping across time - X');
+title('mouseVF42 date170428 run248 - unwarping across time - X');
 view([90 -90]);
 
-%%
+%% Across time Rows
 
 RWbin = zeros(20,124);
 for i = 1:20
-    RWbin(i,:) = mean(RowShiftsW((i-1)*10+1:i*10,:));
+    RWbin(i,:) = mean(RWgreen((i-1)*10+1:i*10,:));
 end
 RWbin(RWbin>0) = 0;
 h = figure;
@@ -324,13 +326,13 @@ axes('ColorOrder',C,'NextPlot','replacechildren')
 x = 1:124; 
 plot(x, RWbin(1:end,1:end));
 axis([1 124 -90 0]);
-% legend('00:00-01:20', '01:20-02:40', '02:40-04:00', '04:00-05:20', ...
-%     '05:20-06:40', '06:40-08:00','08:00-09:20','09:20-10:40',...
-%     '10:40-12:00','12:00-13:20','13:20-14:40','14:40-16:00',...
-%     '16:00-17:20','17:20-18:40','18:40-20:00','20:00-21:20',...
-%     '21:20-22:40','22:40-24:00','24:00-25:20','25:20-26:40');
+legend('00:00-01:20', '01:20-02:40', '02:40-04:00', '04:00-05:20', ...
+    '05:20-06:40', '06:40-08:00','08:00-09:20','09:20-10:40',...
+    '10:40-12:00','12:00-13:20','13:20-14:40','14:40-16:00',...
+    '16:00-17:20','17:20-18:40','18:40-20:00','20:00-21:20',...
+    '21:20-22:40','22:40-24:00','24:00-25:20','25:20-26:40');
 xlabel('plane number');
-title('mouseVF66 date171019 run200 - unwarping across time - Y');
+title('mouseVF42 date170428 run248 - unwarping across time - Y');
 view([90 -90]);
 
 
