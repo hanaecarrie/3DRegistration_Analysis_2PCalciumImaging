@@ -73,8 +73,8 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshiftInterpolate(...
             z_shift(j,1) = x(I)-WidthCorr-1;
         end
         % add shifts into output matrix
-        RowShifts(:,t) = row_shift;
-        ColumnShifts(:,t) = column_shift;
+        RowShifts(:,t) = cat(1,row_shift, zeros(WidthCorr,1));
+        ColumnShifts(:,t) = cat(1,column_shift, zeros(WidthCorr,1));
 
         % ensuring strict monotony, necessary?
         psteps = ones(length(z_shift),1).*(1:length(z_shift))';
@@ -94,7 +94,7 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshiftInterpolate(...
         zaux = naninterp(zaux);
         end
         z_shift = zaux - psteps;
-        ZShifts(:,t) = -z_shift;
+        ZShifts(:,t) = cat(1,-z_shift, zeros(WidthCorr,1));
     end
 
     tEndCZI = toc(tStartCZI);
