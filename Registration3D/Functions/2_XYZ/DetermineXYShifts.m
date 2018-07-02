@@ -2,6 +2,7 @@ function[RowShifts,ColumnShifts] = DetermineXYShifts(full_vol,...
     BlurFactor,KeepingFactor,ReferenceVolume)
 
 %   DETERMINEXYSHITS: determine XY shifts per plane with a parfor loop
+%   Credits: Alex Fratzl
 %
 %   Inputs:
 %     full_vol -- 4D matrix of uint16 or other, dim (x,y,z,t)

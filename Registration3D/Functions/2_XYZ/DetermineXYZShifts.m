@@ -3,6 +3,7 @@ function[ZShifts,RowShifts,ColumnShifts] = DetermineXYZShifts(...
     nPlanesPerReferenceVolume, nPlanesForCorrelation)
 
 %   DETERMINEXYZSHITS: determine XYZ shifts per plane with a parfor loop
+%   Credits: Alex Fratzl
 %
 %   Inputs:
 %     full_vol -- 4D matrix of uint16 or other, dim (x,y,z,t)
@@ -18,6 +19,7 @@ function[ZShifts,RowShifts,ColumnShifts] = DetermineXYZShifts(...
 %     RowShifts -- 2D matrix of doubles, dim (z,t)
 %     ColumnShifts -- 2D matrix of doubles, dim (z,t)
 %     ZShifts -- 2D matrix of doubles, dim (z,t)
+
 
     tStartDXYZS = tic;
 
@@ -40,7 +42,7 @@ function[ZShifts,RowShifts,ColumnShifts] = DetermineXYZShifts(...
     OrderedVolumes = [];
     tvector = 1:Tmax;
     
-    disp('Rectifying volumes...')
+    % Rectifying volumes
     [value1, value2, value3] = ...
         OrderVolumes(tvector, Size, BlurFactor, red_vol);
     
@@ -53,8 +55,7 @@ function[ZShifts,RowShifts,ColumnShifts] = DetermineXYZShifts(...
         ceil(Size(3)/2)+ceil(nPlanesPerReferenceVolume/2-1)+1,:);
     ReferenceVolume = OrderedVolumes(:,:,:,referenceTimePoint);  
     
-    disp('Find best matching planes...');
-
+    %Find best matching planes
     [value4, value5, value6] = ComputeZshift(tvector,...
     ReferenceVolume,OrderedVolumes,Size,StartCorrelation,EndCorrelation,...
     StartPlane,nPlanesPerReferenceVolume);

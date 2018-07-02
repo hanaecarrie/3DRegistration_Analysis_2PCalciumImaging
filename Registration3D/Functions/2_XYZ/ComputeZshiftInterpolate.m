@@ -32,9 +32,9 @@ function[RowShifts,ColumnShifts,ZShifts] = ComputeZshiftInterpolate(...
     ReferenceVolumes = ReferenceVolumes(1:2:end,1:2:end,:,:);
 
     % Preallocating space for output variables
-    RowShifts = zeros(Size(3)-WidthCorr,Size(4));
-    ColumnShifts = zeros(Size(3)-WidthCorr,Size(4));
-    ZShifts = zeros(Size(3)-WidthCorr,Size(4));
+    RowShifts = zeros(Size(3),Size(4));
+    ColumnShifts = zeros(Size(3),Size(4));
+    ZShifts = zeros(Size(3),Size(4));
 
     for t=1:Size(4) % for each time frame
         disp(strcat(' Volume n°', num2str(t)));

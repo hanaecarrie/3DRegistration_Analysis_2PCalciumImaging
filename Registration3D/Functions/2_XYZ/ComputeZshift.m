@@ -2,6 +2,7 @@ function [RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
     ReferenceVolumes, Volume, WidthCorr)
 
 %   COMPUTEZSHIFT: calculate Z shifts
+%   Credits: Alex Fratzl
 %
 %   Inputs:
 %     referenceVolumes -- 4D matrix of uint16 or other, dim (x,y,z/n,t)
@@ -10,7 +11,7 @@ function [RowShifts,ColumnShifts,ZShifts] = ComputeZshift(...
 %   Outputs:
 %     ZShifts -- 2D matrix of doubles, dim (z,t)
 %     ColumnShifts -- 2D matrix of doubles, dim (z,t)
-%     RowShifts -- 2D matrix of doubles, dim (z,t)
+%     RowShifts -- 2D matrix of doubles, dim (1,t)
 
     tStartCZ = tic;
 
