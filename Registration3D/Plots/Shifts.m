@@ -15,18 +15,9 @@ Z_DL89before = Z_DL89before.Z_DL89before;
 Call = reshape(Column_DL89before, [30, 6*930]);
 Rall = reshape(Row_DL89before, [30, 6*930]);
 Zall = reshape(Z_DL89before, [30, 6*930]);
-
-% heatmap(Call, 'grid', 'off'); 
-% heatmap(Rall, 'grid', 'off'); 
-% heatmap(Zall, 'grid', 'off');
-% heatmap(Zall, 'grid', 'off', 'colorlimits', [-1 1]);
-
-
-%%
 Row_DL89before = reshape(Row_DL89before, [30, 930*6]);
-%%
 
-heatmap(Row_DL89before(:,1:930), 'grid', 'off');
+imagesc(Row_DL89before(:,1:930));
 
 %%
 Z = Zall;
@@ -65,13 +56,14 @@ end
 n = 30*20; % average every n values
 a = reshape(running,[],1); % arbitrary data
 avgrun = arrayfun(@(i) mean(a(i:i+n-1)),1:n:length(a)-n+1)';
+
 %%
 
 n = 20;
-x =(1:6)*930/n*(30/15.5)/60;
+x =(1:6)*(930/n)*(30/15.5)/60;
 hold on;
-h = plot(x, (avgrun')/3-2.6, 'r');
-plot(x,ZDL89mean(:,1:end-3)');
+h = plot((avgrun')/3-2.6, 'r');
+plot(ZDL89mean(:,1:end-3)');
 hold off;
 legend(h, 'running state', 'Location', 'Best');
 ylim([-2.6 27]);
@@ -86,12 +78,12 @@ for i = 1:24
 end
 
 imagesc(flipud(ZDL89meanshifts(1:21,:))); colorbar;
-yticks(1:24);
-yticklabels({'24', '23','22','21','20', '19','18', ...
-    '17', '16', '15','14',  '13', '12', '11', '10', '9','8', '7', '6', ...
-    '5', '4' });
-xticks(1:46:279);
-xticklabels({'0', '30', '60', '90', '120', '150', '180'});
+% yticks(1:24);
+% yticklabels({'24', '23','22','21','20', '19','18', ...
+%     '17', '16', '15','14',  '13', '12', '11', '10', '9','8', '7', '6', ...
+%     '5', '4' });
+% xticks(1:46:279);
+% xticklabels({'0', '30', '60', '90', '120', '150', '180'});
 xlabel('time (min)');
 ylabel('plane number');
 title('Z Shifts per plane across time DL89');
