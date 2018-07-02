@@ -72,3 +72,4 @@ idx = 2;
 tEnd = toc;
 fprintf('Elapsed time is %d minutes and %f seconds\n.', ...
     floor((tEnd-tStart)/60),rem((tEnd-tStart),60));
+end

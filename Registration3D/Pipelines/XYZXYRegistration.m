@@ -13,16 +13,16 @@ function [datareg3, savingpathbegin] = XYZXYRegistration(inputsbxpath, ...
 %         registration is performed
 %     n -- int > 0, number of volumes to define a moving reference, n
 %         should divide the total number of volumes
-%     blurfactor -- float, width of the gaussian filter
+%     blurfactor -- float, width of the gaussian filter (ex: 1)
 %     keepingfactor --  float in ]0,1[,
-%         croping indicator for z correction
+%         croping indicator for z correction (ex: 0.95)
 %     edges -- array of int, dim 1x4, number of pixels to remove
 %         [left, right, top, bottom]
 %     planescorr -- int in ]0, nbplanes/2[, 
 %         the spatial correlation will be computed between the considered
 %         plane and the planescorr olanes above and the planescorr planes
-%         below
-%     nbchunck -- int > 0, number of chunck to save tiff images, nbchuncl
+%         below (ex: 3)
+%     nbchunck -- int > 0, number of chunck to save tiff images, nbchunck
 %         should divide the number of volumes
 %     sizedata -- array of 4 int (x,y,z,t) size of the data
 %   Outputs:

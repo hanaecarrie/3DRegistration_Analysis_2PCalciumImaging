@@ -1,9 +1,13 @@
 function [] = affineRegistrationPerPlane(mouse, date, ...
     oldrun, runs, channel, volumereg3, edges, n, nbchunck, varargin)
-% AFFINEREGISTRATIONPERPLANE
+
+% AFFINEREGISTRATIONPERPLANE: perform an affine
+%
+
 
 p = inputParser;
-    addOptional(p, 'structure', 'onscanbox'); % can be 'onstorage' or 'onscanbox'
+    addOptional(p, 'structure', 'onscanbox');
+    % can be 'onstorage' or 'onscanbox'
     addOptional(p, 'server', 'megatron');
     addOptional(p, 'pathbeginread', '');
     addOptional(p, 'pathbeginwrite', 'E:\hanae_data\Microglia\');
@@ -77,6 +81,7 @@ if ~exist(strcat(p.pathbeginwrite, mouse, '_', date, '_',...
         'dataregaffine', mouse, date, oldrun, channel, ...
         'nbchuncktiff', nbchunck, 'server', p.server);
 end
+
 clear dataregaffine;
 
 end
