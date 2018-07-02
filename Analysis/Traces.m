@@ -1,15 +1,14 @@
-% Script Traces Dura
+%% Script Traces Dura DL89
+% On Megatron
+
 clear all;
 clc;
 
 % Parameters
 mouse = 'DL89';
 date = '171122';
-mycmap = load('D:\Analysis_scripts\Dropbox\AndermannLab\users\hanae\code\utils\cmap_bluewhitered.mat');
-mycmap = mycmap.mycmap_BlueWhiteRed;
 
-
-%% all planes
+%% get nb ROIS all planes
 
 nbrois = zeros(1,30);
 
@@ -26,7 +25,7 @@ for plane = 1:30
     end
 end
 
-%% timecourses
+%% get all timecourses
 
 timecourseallROIS = zeros(sum(nbrois), 5580);
 
@@ -51,12 +50,13 @@ for plane = 1:30
     end
 end
 
-%%
+% figure
 imagesc(timecourseallROIS);  colorbar; colormap(hot); caxis([0 1]);
-heatmap(timecourseallROIS, 'grid', 'off', 'Colormap', hot);
+title('dff across time all ROIs');
+% heatmap(timecourseallROIS, 'grid', 'off', 'Colormap', hot);
 caxis([0 1]);
 
-%%
+%% timecourses normalized w.r.t. baseline ( mean aruns 1 and 2)
 
 tcallROIS = timecourseallROIS;
 
@@ -67,8 +67,9 @@ for i = 1:size(tcallROIS, 1)
 end
 
 imagesc(tcallROIS);  colorbar; colormap(hot);caxis([0 1]);
+title('dff across time all ROIs - normalized w.r.t. baseline');
 
-%%
+%% timecourses smooth
 
 figure();
 timecourseallROISsmooth = timecourseallROIS;
@@ -80,11 +81,12 @@ timecourseallROISsmooth(i,:) = (timecourseallROISsmooth(i,:));
 end
 imagesc(timecourseallROISsmooth/2); colorbar; colormap(hot);
 caxis([0 0.6]);
+title('dff across time all ROIs - smooth');
 
 
+%% get ROIs masks
 
-%% masks
-
+% all masks
 masksallplanes = zeros(512, 796, 30);
 
 for plane = 1:30
@@ -102,8 +104,7 @@ for plane = 1:30
     end
 end
 
-%% projection all masks
-
+% projection all masks
 allmasks = zeros(512, 796);
 for plane = 1:30
     allmasks = allmasks+masksallplanes(:,:,plane);
@@ -149,7 +150,7 @@ for plane = 1:30
     end
 end
 
-%%
+%% unique ROis
 
 for i = 1:length(indexes)
     disp(indexes(i));
@@ -158,7 +159,8 @@ end
 
 tracesuniquesrois(isnan(tracesuniquesrois(:,1)),:) = [];
 
-%%
+%% normalization?
+
 maxperROI = max(timecourseallROIS, [], 2);
 
 timecourseallROISnorm = timecourseallROIS;
@@ -190,15 +192,13 @@ caxis([0 0.6]);
 %imshow(h);
 
 imagesc(newtraces/2);
+title('all traces, sorted, DL89');
 colormap('hot');caxis([0 1]); colorbar; caxis([0 0.6]);
 set(gca,'XTick',0:930:size(newtraces,2));
 set(gca,'YTick',0:100:size(newtraces,1));
 
-%%
+%% plane 21 only
 
-
-
-%%
 traces21 = traces(438:438+nbrois(21),:);
 
 score21 = zeros(size(traces21,1),1);
@@ -218,17 +218,6 @@ end
 sortorder = cat(1, score21_order(1:30), (31:41)');
 traces21 = traces21(sortorder,:);
 
-
-% score21 = zeros(size(traces21,1),1);
-% for i = 1: size(traces21,1)
-%   score21(i) = sum(traces21(i,1900:2790/4));
-% end
-% 
-% [score21_sorted, score21_order] = sort(score21);
-% traces21 = traces21(score21_order,:);
-
-
-% heatmap(traces21/2, 'grid', 'off', 'Colormap', hot); caxis([0 0.6]);
 imagesc(traces21/2);
 colormap('hot');caxis([0 0.6]); colorbar;
 set(gca,'XTick',0:930:size(newtraces21,2));
@@ -237,14 +226,15 @@ xlabel('time (min)');
 set(gca,'YTick',0:10:size(newtraces21,1));
 ylabel('ROI number');
 
+
 %% mean volume
 
-path1 = 'E:\hanae_data\Dura\registrationFiles\17-Apr-2018_13-32-21\volumeregaffine\DL89_171122_1_volumeregaffine.sbx';
-path2 = 'E:\hanae_data\Dura\registrationFiles\17-Apr-2018_14-17-43\volumeregacrossrunsZ\DL89_171122_2_volumeregacrossrunsZ.sbx';
-path4 = 'E:\hanae_data\Dura\registrationFiles\17-Apr-2018_15-54-07\volumeregacrossrunsZ\DL89_171122_4_volumeregacrossrunsZ.sbx';
-path3 = 'E:\hanae_data\Dura\registrationFiles\17-Apr-2018_15-05-45\volumeregacrossrunsZ\DL89_171122_3_volumeregacrossrunsZ.sbx';
-path5 = 'E:\hanae_data\Dura\registrationFiles\17-Apr-2018_16-42-41\volumeregacrossrunsZ\DL89_171122_5_volumeregacrossrunsZ.sbx';
-path6 = 'E:\hanae_data\Dura\registrationFiles\17-Apr-2018_17-29-43\volumeregacrossrunsZ\DL89_171122_6_volumeregacrossrunsZ.sbx';
+path1 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_1\volumeregaffine\DL89_171122_1_volumeregaffine.sbx';
+path2 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_2\volumeregacrossrunsZ\DL89_171122_2_volumeregacrossrunsZ.sbx';
+path4 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_3\volumeregacrossrunsZ\DL89_171122_3_volumeregacrossrunsZ.sbx';
+path3 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_4\volumeregacrossrunsZ\DL89_171122_4_volumeregacrossrunsZ.sbx';
+path5 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_5\volumeregacrossrunsZ\DL89_171122_5_volumeregacrossrunsZ.sbx';
+path6 = 'E:\hanae_data\Dura\regdata\DL89_older\DL89_171122_6\volumeregacrossrunsZ\DL89_171122_6_volumeregacrossrunsZ.sbx';
 
 vol1 = sbxReadPMT(path1);
 vol1 = reshape(vol1, [512, 796, 30, 930]);
@@ -435,6 +425,7 @@ end
 % x = lsqcurvefit(fun,x0,xdata,ydata);
 % times = linspace(xdata(1),xdata(end));
 % plot(times, fun(x,times));
+
 %%
 
 % ii = [34, 36, 39, 46, 55, 91, 142];

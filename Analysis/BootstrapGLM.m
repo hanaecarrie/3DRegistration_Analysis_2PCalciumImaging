@@ -1,11 +1,11 @@
-
 %% Bootstraping
+% Test if the model is predictive (% above chance?)
 
 clear all;
 
 % Load data given run
-path1 = "E:\hanae_data\GLMDura\myout_DL67_170405_1";
-path2 = "E:\hanae_data\GLMDura\myout_DL67_170405_2";
+path1 = 'E:\hanae_data\Dura\GLMDura\myout_DL67_170405_1.mat';
+path2 = 'E:\hanae_data\Dura\GLMDura\myout_DL67_170405_2.mat';
 myout1 = load(path1);
 myout1 = myout1.myout;
 myout2 = load(path2);
@@ -15,12 +15,12 @@ nbcell = size(myout1.diff, 1);
 
 %% Plot diff run (2 ways)
 % 
+%
 % for c = 1 : 10% size(myout1.diff,1)
 %     figure;
 %     plot(time, myout1.diff(c,:), 'b', time, myout2.diff(c,:), 'r');
 %     legend('diff run1', 'diff run2');
 % end
-
 
 %% Distance cell ref
 
@@ -48,7 +48,9 @@ for c = 1:nbcell
     meanc = meanc(1);
     diffmean(c) = meanc-ref;
 end
-%%
+
+%% Figure and % above chance
+
 val = length(diffmean(diffmean>=0))*100/length(diffmean);
 figure; hist(diffmean, 50);
 line([0, 0], ylim, 'LineWidth', 2, 'Color', 'r');
